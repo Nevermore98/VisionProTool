@@ -1,0 +1,73 @@
+﻿<Page x:Class="WPF_VisionPro_Demo.Views.Pages.DebugPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:cog="clr-namespace:Cognex.VisionPro;assembly=Cognex.VisionPro.ToolGroup.Controls"
+      xmlns:cogtool="clr-namespace:Cognex.VisionPro.ToolBlock;assembly=Cognex.VisionPro.ToolGroup.Controls"
+      xmlns:conv="clr-namespace:WPF_VisionPro_Demo.Converters"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+      xmlns:local="clr-namespace:WPF_VisionPro_Demo.Views.Pages"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:pages="clr-namespace:WPF_VisionPro_Demo.ViewModels.Pages"
+      xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+      Title="DebugPage"
+      d:DataContext="{d:DesignInstance Type=pages:DebugPageVM,
+                                       IsDesignTimeCreatable=True}"
+      d:DesignHeight="450"
+      d:DesignWidth="800"
+      mc:Ignorable="d">
+
+    <Page.Resources>
+        <conv:HeightConverter x:Key="HeightConverter" />
+    </Page.Resources>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Unloaded">
+            <i:InvokeCommandAction Command="{Binding UnloadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <!-- 使用 DockPanel 再放大重绘时不会卡顿 -->
+    <!--<DockPanel Margin="10,10,18,10">
+        <TextBlock DockPanel.Dock="Top" FontSize="18" Text="{Binding Is}" />
+        <TextBlock DockPanel.Dock="Top" FontSize="18" Text="缺陷检测" />
+
+        <Border Padding="10,0,10,0"
+                Background="#f0f0f0"
+                CornerRadius="4"
+                DockPanel.Dock="Bottom">
+            <WindowsFormsHost x:Name="windowsFormsHost" UseLayoutRounding="True">
+                <cogtool:CogToolBlockEditV2 x:Name="cogToolBlockEditV2" />
+            </WindowsFormsHost>
+        </Border>
+
+        <TextBox Height="40" DockPanel.Dock="Bottom" Text="缺陷检测" />
+    </DockPanel>-->
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="{Binding Name}" />
+
+        <Border x:Name="border"
+                Grid.Row="1"
+                Padding="10,0,10,0"
+                Background="#f0f0f0"
+                CornerRadius="4">
+            <WindowsFormsHost x:Name="windowsFormsHost" Height="{Binding ActualHeight, ElementName=border, Converter={StaticResource HeightConverter}}" UseLayoutRounding="True">
+                <cogtool:CogToolBlockEditV2 x:Name="cogToolBlockEditV2" />
+            </WindowsFormsHost>
+        </Border>
+
+
+        <TextBox Grid.Row="2" Height="40" Text="缺陷检测" />
+
+
+    </Grid>
+</Page>
