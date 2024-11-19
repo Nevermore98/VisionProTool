@@ -1,0 +1,20 @@
+﻿<Page x:Class="WPF_VisionPro_Demo.Views.Pages.CameraPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:cog="clr-namespace:Cognex.VisionPro;assembly=Cognex.VisionPro.ToolGroup.Controls"
+      xmlns:cogtool="clr-namespace:Cognex.VisionPro.ToolBlock;assembly=Cognex.VisionPro.ToolGroup.Controls"
+      xmlns:conv="clr-namespace:WPF_VisionPro_Demo.Converters"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:WPF_VisionPro_Demo.Views.Pages"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:pages="clr-namespace:WPF_VisionPro_Demo.ViewModels.Pages"
+      xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+      Title="CameraPage"
+      d:DesignHeight="450"
+      d:DesignWidth="800"
+      mc:Ignorable="d">
+
+    <Grid>
+        <TextBlock Text="相机采集 TODO" />
+    </Grid>
+</Page>

@@ -25,10 +25,6 @@
                        IsBackButtonVisible="Collapsed"
                        IsPaneToggleVisible="False"
                        PaneDisplayMode="LeftFluent"
-                       ScrollViewer.CanContentScroll="False"
-                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                       ScrollViewer.PanningMode="None"
-                       ScrollViewer.VerticalScrollBarVisibility="Auto"
                        UseLayoutRounding="True">
         <ui:NavigationView.Resources>
             <ResourceDictionary>
@@ -38,24 +34,28 @@
         </ui:NavigationView.Resources>
 
         <ui:NavigationView.MenuItems>
-            <ui:NavigationViewItem Command="{Binding TestCommand}"
-                                   Content="运行"
-                                   Icon="{ui:SymbolIcon Home24}"
+            <ui:NavigationViewItem Content="相机"
+                                   Icon="{ui:SymbolIcon Camera24,
+                                                        Filled=False}"
                                    NavigationCacheMode="Enabled"
-                                   ScrollViewer.CanContentScroll="False"
-                                   ScrollViewer.IsDeferredScrollingEnabled="False"
-                                   ScrollViewer.PanningMode="None"
-                                   ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                                   TargetPageType="{x:Type pages:RunningPage}" />
+                                   TargetPageType="{x:Type pages:CameraPage}" />
             <ui:NavigationViewItem Content="调试"
-                                   Icon="{ui:SymbolIcon Library24}"
+                                   Icon="{ui:SymbolIcon Bug24,
+                                                        Filled=False}"
                                    NavigationCacheMode="Enabled"
                                    TargetPageType="{x:Type pages:DebugPage}" />
+            <!-- Bug 切换导航后，图标就强制变成非填充的了 -->
+            <ui:NavigationViewItem Content="脚本"
+                                   Icon="{ui:SymbolIcon ClipboardCode24,
+                                                        Filled=False}"
+                                   NavigationCacheMode="Enabled"
+                                   TargetPageType="{x:Type pages:ScriptPage}" />
 
         </ui:NavigationView.MenuItems>
         <ui:NavigationView.FooterMenuItems>
             <ui:NavigationViewItem Content="设置"
-                                   Icon="{ui:SymbolIcon Settings24}"
+                                   Icon="{ui:SymbolIcon Settings24,
+                                                        Filled=False}"
                                    NavigationCacheMode="Enabled"
                                    TargetPageType="{x:Type pages:SettingsPage}" />
         </ui:NavigationView.FooterMenuItems>

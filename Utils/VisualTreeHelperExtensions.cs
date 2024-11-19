@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows;
 using System.Windows.Media;
-using System.Windows;
 
 namespace WPF_VisionPro_Demo.Utils
 {
     public static class VisualTreeHelperExtensions
     {
-        public static T FindChild<T>(this DependencyObject parent, string childName) where T : DependencyObject
+        public static T? FindChild<T>(this DependencyObject parent, string childName) where T : DependencyObject
         {
-            // 如果parent是空的，返回null
             if (parent == null) return null;
 
-            T foundChild = null;
+            T? foundChild = null;
 
             int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
             for (int i = 0; i < childrenCount; i++)
@@ -37,6 +31,22 @@ namespace WPF_VisionPro_Demo.Utils
                 if (foundChild != null) break;
             }
             return foundChild;
+        }
+
+        public static T? FindChild<T>(DependencyObject parent) where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+
+                if (child is T typedChild)
+                    return typedChild;
+
+                T? recursiveResult = FindChild<T>(child);
+                if (recursiveResult != null)
+                    return recursiveResult;
+            }
+            return null;
         }
     }
 

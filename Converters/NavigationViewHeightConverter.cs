@@ -8,14 +8,13 @@ using System.Windows.Data;
 
 namespace WPF_VisionPro_Demo.Converters
 {
-    public class HeightConverter : IValueConverter
+    public class NavigationViewHeightConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is double borderHeight)
+            if (value is double height)
             {
-                // WindowsFormsHost 高度再减去 34 左右，放大缩小就不会卡顿，可能是 Winform 的渲染机制的问题
-                return borderHeight - 10;
+                return height - 200; // 减去100像素
             }
             return value;
         }

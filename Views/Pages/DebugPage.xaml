@@ -1,7 +1,8 @@
 ﻿<Page x:Class="WPF_VisionPro_Demo.Views.Pages.DebugPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:cog="clr-namespace:Cognex.VisionPro;assembly=Cognex.VisionPro.ToolGroup.Controls"
+      xmlns:cog="clr-namespace:Cognex.VisionPro;assembly=Cognex.VisionPro.Controls"
+      xmlns:cogdisplay="clr-namespace:Cognex.VisionPro.Display;assembly=Cognex.VisionPro.Display.Controls"
       xmlns:cogtool="clr-namespace:Cognex.VisionPro.ToolBlock;assembly=Cognex.VisionPro.ToolGroup.Controls"
       xmlns:conv="clr-namespace:WPF_VisionPro_Demo.Converters"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -9,18 +10,26 @@
       xmlns:local="clr-namespace:WPF_VisionPro_Demo.Views.Pages"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:pages="clr-namespace:WPF_VisionPro_Demo.ViewModels.Pages"
-      xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:vconv="http://schemas.superdev.ch/valueconverters/2016/xaml"
       Title="DebugPage"
       d:DataContext="{d:DesignInstance Type=pages:DebugPageVM,
                                        IsDesignTimeCreatable=True}"
       d:DesignHeight="450"
       d:DesignWidth="800"
       mc:Ignorable="d">
-
     <Page.Resources>
-        <conv:HeightConverter x:Key="HeightConverter" />
-    </Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Views/Styles/DebugPageStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
 
+            <conv:HeightConverter x:Key="HeightConverter" />
+            <vconv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" FalseValue="Collapsed" />
+            <vconv:BoolToVisibilityConverter x:Key="BoolToVisibilityReConverter" FalseValue="Collapsed" IsInverted="True" />
+
+        </ResourceDictionary>
+    </Page.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
@@ -29,45 +38,127 @@
             <i:InvokeCommandAction Command="{Binding UnloadedCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <!-- 使用 DockPanel 再放大重绘时不会卡顿 -->
-    <!--<DockPanel Margin="10,10,18,10">
-        <TextBlock DockPanel.Dock="Top" FontSize="18" Text="{Binding Is}" />
-        <TextBlock DockPanel.Dock="Top" FontSize="18" Text="缺陷检测" />
 
-        <Border Padding="10,0,10,0"
-                Background="#f0f0f0"
-                CornerRadius="4"
-                DockPanel.Dock="Bottom">
-            <WindowsFormsHost x:Name="windowsFormsHost" UseLayoutRounding="True">
-                <cogtool:CogToolBlockEditV2 x:Name="cogToolBlockEditV2" />
-            </WindowsFormsHost>
-        </Border>
-
-        <TextBox Height="40" DockPanel.Dock="Bottom" Text="缺陷检测" />
-    </DockPanel>-->
-
-    <Grid Margin="16">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="40" />
-        </Grid.RowDefinitions>
-
-        <TextBlock Grid.Row="0" Text="{Binding Name}" />
+    <Grid Margin="10,10,4,10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="400" />
+        </Grid.ColumnDefinitions>
 
         <Border x:Name="border"
-                Grid.Row="1"
-                Padding="10,0,10,0"
+                Grid.Column="0"
+                Padding="16,16,2,2"
                 Background="#f0f0f0"
                 CornerRadius="4">
-            <WindowsFormsHost x:Name="windowsFormsHost" Height="{Binding ActualHeight, ElementName=border, Converter={StaticResource HeightConverter}}" UseLayoutRounding="True">
-                <cogtool:CogToolBlockEditV2 x:Name="cogToolBlockEditV2" />
+            <WindowsFormsHost x:Name="windowsFormsHost" UseLayoutRounding="True">
+                <cog:CogRecordDisplay x:Name="cogRecordDisplay" />
             </WindowsFormsHost>
         </Border>
 
 
-        <TextBox Grid.Row="2" Height="40" Text="缺陷检测" />
+        <ScrollViewer Grid.Column="1" Margin="8,0,0,0" Padding="0,0,12,0">
+            <StackPanel>
+                <ui:TextBlock VerticalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" Text="输入图像" />
+
+                <ui:Button Appearance="Light" Command="{Binding LoadImageCommand}" Content="选择图像" />
+                <ui:Button Appearance="Primary" Command="{Binding LoadFolderCommand}" Content="选择文件夹" />
+
+                <!-- FontTypography="Body" 有 bug 不生效，https://github.com/lepoco/wpfui/issues/1248 -->
+                <ui:TextBlock VerticalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" Text="输入参数" />
+                <!-- TODO int模板的输入框没有初始值 -->
+                <Border Padding="4"
+                        BorderBrush="#f0f0f0"
+                        BorderThickness="2"
+                        CornerRadius="3">
+                    <StackPanel>
+                        <ItemsControl ItemTemplateSelector="{StaticResource InputItemTemplateSelector}" ItemsSource="{Binding InputList}" Visibility="{Binding IsExistInput, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+
+                        <TextBlock Text="无输入参数" Visibility="{Binding IsExistInput, Converter={StaticResource BoolToVisibilityReConverter}}" />
+                    </StackPanel>
+                </Border>
 
 
+                <WrapPanel HorizontalAlignment="Center">
+                    <ui:Button Margin="0,0,4,0"
+                               Appearance="Primary"
+                               Command="{Binding PreviousImageCommand}"
+                               Content="上一张"
+                               Icon="{ui:SymbolIcon Previous24,
+                                                    Filled=True}" />
+                    <ui:TextBox Width="50"
+                                IsEnabled="{Binding IsImageCountMoreThanOne}"
+                                Margin="0,0,4,0"
+                                ClearButtonEnabled="False"
+                                Text="{Binding CurrentIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <ui:TextBox.InputBindings>
+                            <KeyBinding Key="Enter"
+                                        Command="{Binding RunCommand}" />
+                        </ui:TextBox.InputBindings>
+                    </ui:TextBox>
+                    
+                    <!--TODO NumberBox 值更新有 bug，总是旧值，https://github.com/lepoco/wpfui/issues/945-->
+                    <!--<ui:NumberBox x:Name="currentIndexNumberBox" Width="50"
+                                  Margin="0,0,4,0"
+                                  ClearButtonEnabled="False"
+                                  IsEnabled="{Binding IsImageCountMoreThanOne}"
+                                  Maximum="{Binding ImageCount}" 
+                                  Minimum="1" MaxDecimalPlaces="0"
+                                  SmallChange="1"
+                                  SpinButtonPlacementMode="Hidden"
+                                  Value="{Binding CurrentIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <ui:NumberBox.InputBindings>
+                            <KeyBinding Key="Enter"
+                                        Command="{Binding RunCommand}" />
+                        </ui:NumberBox.InputBindings>
+                    </ui:NumberBox>-->
+                    <ui:TextBlock Margin="0,0,4,0"
+                                  VerticalAlignment="Center"
+                                  Style="{StaticResource BodyTextBlockStyle}"
+                                  Text="{Binding ImageCount, StringFormat='{}/{0}'}"
+                                  Visibility="{Binding IsImageCountMoreThanOne, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                    <ui:Button Margin="0,0,4,0"
+                               Appearance="Primary"
+                               Command="{Binding NextImageCommand}"
+                               Content="下一张"
+                               Icon="{ui:SymbolIcon Next24,
+                                                    Filled=True}" />
+                    <ui:Button Appearance="Primary"
+                               Command="{Binding RunCommand}"
+                               Content="运行"
+                               Icon="{ui:SymbolIcon Play24,
+                                                    Filled=True}" />
+
+                </WrapPanel>
+
+                <ui:Button Appearance="Primary" Content="WPF UI" Icon="{ui:FontIcon '🌈'}" />
+
+                <ui:TextBlock VerticalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" Text="输出参数" />
+
+                <ui:DataGrid AlternatingRowBackground="LightGray"
+                             AlternationCount="2"
+                             AutoGenerateColumns="False"
+                             BorderBrush="#f0f0f0"
+                             BorderThickness="2"
+                             CanUserAddRows="False"
+                             CanUserDeleteRows="False"
+                             CanUserResizeRows="False"
+                             ItemsSource="{Binding OutputList}"
+                             RowBackground="White"
+                             Style="{StaticResource DefaultDataGridStyle}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding Id}" Header="序号" IsReadOnly="True" />
+                        <DataGridTextColumn MinWidth="100" Binding="{Binding Name}" Header="名称" />
+                        <DataGridTextColumn Width="*" Binding="{Binding Value}" Header="值" />
+                    </DataGrid.Columns>
+                </ui:DataGrid>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>

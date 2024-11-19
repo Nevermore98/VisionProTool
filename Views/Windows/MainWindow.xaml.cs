@@ -1,6 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms.Integration;
+using System.Windows.Media;
+using Wpf.Ui.Controls;
+using WPF_VisionPro_Demo.Utils;
 using WPF_VisionPro_Demo.ViewModels.Windows;
 using WPF_VisionPro_Demo.Views.Pages;
 
@@ -19,13 +23,18 @@ namespace WPF_VisionPro_Demo.Views.Windows
             DataContext = viewModel;
 
             Loaded += MainWindow_Loaded;
+            SizeChanged += MainWindow_SizeChanged;
         }
 
-       
+        private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var page = VisualTreeHelperExtensions.FindChild<Page>(RootNavigationView);
+            if (page != null) page.Height = ActualHeight - 48;
+        }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            RootNavigationView.Navigate(typeof(RunningPage));
+            RootNavigationView.Navigate(typeof(DebugPage));
         }
 
     }

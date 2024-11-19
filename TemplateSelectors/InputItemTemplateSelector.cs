@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using WPF_VisionPro_Demo.Models;
 
-namespace WPF_VisionPro_Demo.TemplateSelector
+namespace WPF_VisionPro_Demo.TemplateSelectors
 {
     public class InputItemTemplateSelector : DataTemplateSelector
     {

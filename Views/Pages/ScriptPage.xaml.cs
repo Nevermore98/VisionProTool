@@ -5,24 +5,27 @@ using WPF_VisionPro_Demo.Views.Windows;
 
 namespace WPF_VisionPro_Demo.Views.Pages
 {
-    public partial class DebugPage : Page
+    public partial class ScriptPage : Page
     {
-        public DebugPageVM ViewModel { get; }
-        public DebugPage()
-        {
-            Loaded += DebugPage_Loaded;
+        public ScriptPageVM ViewModel { get; }
 
-            ViewModel = App.Current.Services.GetRequiredService<DebugPageVM>();
+
+        public ScriptPage()
+        {
+            Loaded += ScriptPage_Loaded;
+            ViewModel = App.Current.Services.GetRequiredService<ScriptPageVM>();
             DataContext = ViewModel;
             InitializeComponent();
         }
 
-        private void DebugPage_Loaded(object sender, System.Windows.RoutedEventArgs e)
+
+
+        private void ScriptPage_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
             // 设置高度，避免滚动。ScrollViewer.CanContentScroll = False 似乎不起作用
             Height = App.Current.Services.GetRequiredService<MainWindow>().ActualHeight - 48;
 
-            ViewModel.RecordDisplayControl = cogRecordDisplay;
+            ViewModel.ToolBlockEditV2Control = cogToolBlockEditV2;
         }
     }
 }

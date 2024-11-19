@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <LangVersion>10.0</LangVersion>
     <RootNamespace>WPF_VisionPro_Demo</RootNamespace>
     <Nullable>enable</Nullable>
@@ -22,12 +22,15 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+    <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageReference Include="ValueConverters" Version="3.1.22" />
     <PackageReference Include="WPF-UI" Version="3.0.5" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Resources\Dlls\" />
+    <Folder Include="ValidationRules\" />
     <Folder Include="ViewModels\Components\" />
     <Folder Include="Views\Components\" />
   </ItemGroup>
@@ -74,6 +77,54 @@
     <None Update="Resources\ApplicationIcon.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
+    </None>
+    <None Update="VppData\圆形文字识别TB.vpp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测TB.vpp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测\img\01_good.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测\img\02_missinghole.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测\img\02_tabdefect.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测\img\03_good.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测\img\04_good.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测\img\04_missinghole.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测\img\04_tabdefect.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测\img\05_tabdefect.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测\img\06_good.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测\img\06_tabdefect.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测\img\07_good.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测（支持输入阈值、PMCount）TB.vpp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测（支持输入阈值、查找数量，并显示在图像上）TB.vpp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测（支持输入阈值）TB.vpp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

@@ -69,17 +69,20 @@ namespace WPF_VisionPro_Demo
 
             // 可能是 WPF-UI 导航的问题，使用 sp => new VM { DataContext = sp.GetService<VM>() }) 无法绑定到 VM
             // 只好去后台代码中绑定，其他 View 也要这样
-            services.AddSingleton<MainWindowVM>();
             services.AddSingleton<MainWindow>();
+            services.AddSingleton<MainWindowVM>();
 
-            services.AddSingleton<RunningPageVM>();
-            services.AddSingleton<RunningPage>();
+            services.AddSingleton<CameraPage>();
+            services.AddSingleton<CameraPageVM>();
 
-            services.AddSingleton<DebugPageVM>();
             services.AddSingleton<DebugPage>();
+            services.AddSingleton<DebugPageVM>();
 
-            services.AddSingleton<SettingsPageVM>();
+            services.AddSingleton<ScriptPage>();
+            services.AddSingleton<ScriptPageVM>();
+
             services.AddSingleton<SettingsPage>();
+            services.AddSingleton<SettingsPageVM>();
 
 
             //services.AddSingleton<VisionDebugVM>();
@@ -118,8 +121,8 @@ namespace WPF_VisionPro_Demo
             loadingWindow.Show();
 
             // 先预创建视图，后面切换导航就不用等待
+            Services.GetRequiredService<ScriptPage>();
             Services.GetRequiredService<DebugPage>();
-            Services.GetRequiredService<RunningPage>();
 
             var mainWindow = Services.GetRequiredService<MainWindow>();
             loadingWindow.Close();
