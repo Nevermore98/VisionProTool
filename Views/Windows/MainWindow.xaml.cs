@@ -34,7 +34,7 @@ namespace WPF_VisionPro_Demo.Views.Windows
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            RootNavigationView.Navigate(typeof(DebugPage));
+            RootNavigationView.Navigate(typeof(RunningPage));
         }
 
     }

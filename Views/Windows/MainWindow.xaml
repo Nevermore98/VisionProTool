@@ -7,7 +7,7 @@
         xmlns:pages="clr-namespace:WPF_VisionPro_Demo.Views.Pages"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:windows="clr-namespace:WPF_VisionPro_Demo.ViewModels.Windows"
-        Title="WPF-VisionPro 工具"
+        Title="VisionPro 调试助手"
         Width="1100"
         Height="700"
         d:DataContext="{d:DesignInstance Type=windows:MainWindowVM}"
@@ -39,17 +39,17 @@
                                                         Filled=False}"
                                    NavigationCacheMode="Enabled"
                                    TargetPageType="{x:Type pages:CameraPage}" />
+            <ui:NavigationViewItem Content="运行"
+                                   Icon="{ui:SymbolIcon CalendarPlay24,
+                                                        Filled=False}"
+                                   NavigationCacheMode="Enabled"
+                                   TargetPageType="{x:Type pages:RunningPage}" />
+            <!-- Bug 切换导航后，图标就强制变成非填充的了 -->
             <ui:NavigationViewItem Content="调试"
                                    Icon="{ui:SymbolIcon Bug24,
                                                         Filled=False}"
                                    NavigationCacheMode="Enabled"
                                    TargetPageType="{x:Type pages:DebugPage}" />
-            <!-- Bug 切换导航后，图标就强制变成非填充的了 -->
-            <ui:NavigationViewItem Content="脚本"
-                                   Icon="{ui:SymbolIcon ClipboardCode24,
-                                                        Filled=False}"
-                                   NavigationCacheMode="Enabled"
-                                   TargetPageType="{x:Type pages:ScriptPage}" />
 
         </ui:NavigationView.MenuItems>
         <ui:NavigationView.FooterMenuItems>
