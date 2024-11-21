@@ -84,31 +84,6 @@ namespace WPF_VisionPro_Demo
             services.AddSingleton<SettingsPage>();
             services.AddSingleton<SettingsPageVM>();
 
-
-            //services.AddSingleton<VisionDebugVM>();
-            //services.AddSingleton<VisionDebugView>(sp => new VisionDebugView { DataContext = sp.GetService<VisionDebugVM>() });
-
-            //services.AddSingleton<VisionRunVM>();
-            //services.AddSingleton<VisionRunView>(sp => new VisionRunView { DataContext = sp.GetService<VisionRunVM>() });
-
-            //services.AddSingleton<VisionJobDebugVM>();
-            //services.AddSingleton<VisionJobDebugView>(sp => new VisionJobDebugView { DataContext = sp.GetService<VisionJobDebugVM>() });
-
-            //services.AddTransient<DefectDetectionVM>();
-            //services.AddTransient<DefectDetectionView>(sp => new DefectDetectionView { DataContext = sp.GetService<DefectDetectionVM>() });
-
-            //services.AddTransient<QuantityStatisticsVM>();
-            //services.AddTransient<QuantityStatisticsView>(sp => new QuantityStatisticsView { DataContext = sp.GetService<QuantityStatisticsVM>() });
-
-            //services.AddTransient<TextRecognitionVM>();
-            //services.AddTransient<TextRecognitionView>(sp => new TextRecognitionView { DataContext = sp.GetService<TextRecognitionVM>() });
-
-            //services.AddTransient<VppNameSettingWindowVM>();
-            //services.AddTransient<VppNameSettingWindowView>(sp => new VppNameSettingWindowView { DataContext = sp.GetService<VppNameSettingWindowVM>() });
-
-
-
-
             return services.BuildServiceProvider();
         }
 

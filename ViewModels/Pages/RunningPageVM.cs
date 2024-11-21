@@ -3,275 +3,449 @@ using Cognex.VisionPro.ImageFile;
 using Cognex.VisionPro.ToolBlock;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging.Messages;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using Ookii.Dialogs.Wpf;
 using Serilog;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
+using System.Windows.Threading;
+using Wpf.Ui.Controls;
 using WPF_VisionPro_Demo.Models;
 using MessageBox = System.Windows.MessageBox;
 
-namespace WPF_VisionPro_Demo.ViewModels.Pages
+namespace WPF_VisionPro_Demo.ViewModels.Pages;
+
+public partial class RunningPageVM : ObservableRecipient, IRecipient<PropertyChangedMessage<string>>
 {
-    public partial class RunningPageVM : ObservableRecipient, IRecipient<PropertyChangedMessage<string>>
+    public void Receive(PropertyChangedMessage<string> message)
     {
-        public void Receive(PropertyChangedMessage<string> message)
+        if (message.Sender is DebugPageVM debugPage)
         {
-            if (message.Sender is DebugPageVM vm)
-            {
-                VppFilePath = vm.VppFilePath;
-                ToolBlock = (CogToolBlock)CogSerializer.LoadObjectFromFile(VppFilePath);
-            }
+            VppFilePath = debugPage.VppFilePath;
+            ToolBlock = (CogToolBlock)CogSerializer.LoadObjectFromFile(VppFilePath);
         }
-        public CogRecordDisplay RecordDisplayControl { get; set; }
+    }
+
+    private ILogger _logger;
+
+    public CogRecordDisplay RecordDisplayControl { get; set; }
+    public CogToolBlock ToolBlock { get; set; } = new();
+    public CogImageFileTool ImageFileTool { get; set; } = new();
+    private ICogImage _currentImage;
+    private object _lockObj = new();
 
 
-        public CogToolBlock ToolBlock { get; set; } = new();
-        public CogImageFileTool ImageFileTool { get; set; } = new();
-
-        public string VppFilePath { get; set; } = "";
+    public string VppFilePath { get; set; } = "";
+    public string BmpFileDir { get; set; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
 
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(IsExistInput))]
-        private List<InputItem> _inputList = new();
+    private Stopwatch _currentRunStopwatch = new();
 
-        [ObservableProperty]
-        private List<OutputItem> _outputList = new();
+    private Stopwatch _keepRunningStopwatch = new();
+    private DispatcherTimer _keepRunningTimer = new();
 
+    // 总处理时间 = _currentHandleTime 累加
+    private double _totalHandleTime;
 
-        [ObservableProperty]
-        private string _name = "运行";
-        [ObservableProperty]
-        private string _result = "无结果";
-        [ObservableProperty]
-        private int _currentIndex = 1;
-
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(IsImageCountMoreThanOne), nameof(ImageCount))]
-        [NotifyCanExecuteChangedFor(nameof(NextImageCommand), nameof(PreviousImageCommand))]
-        private List<string> _imagePathList = new(); // 文件夹下的图像路径列表
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsExistInput))]
+    private List<InputItem> _inputList = new();
+    [ObservableProperty]
+    private List<OutputItem> _outputList = new();
 
 
-        public bool IsImageCountMoreThanOne => ImagePathList.Count > 1;
-        public int ImageCount => ImagePathList.Count;
-        public bool IsExistInput => InputList.Count > 0;
-        private ILogger _logger;
+    [ObservableProperty]
+    private string _name = "运行";
+    [ObservableProperty]
+    private string _result = "无结果";
+    [ObservableProperty]
+    private int _currentIndex = 1;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(KeepRunningButtonContent), nameof(KeepRunningButtonIcon), nameof(KeepRunningAppearance))]
+    private bool _isKeepRunning = false;
 
-        public RunningPageVM()
+    #region 设置
+    [ObservableProperty]
+    private bool _isSaveBmp = false;
+    [ObservableProperty]
+    private int _keepRunningDelayTime = 100;
+    #endregion
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsImageCountMoreThanOne), nameof(ImageCount))]
+    [NotifyCanExecuteChangedFor(nameof(NextImageCommand), nameof(PreviousImageCommand))]
+    private List<string> _imagePathList = new(); // 文件夹下的图像路径列表
+
+    
+
+    #region 统计
+    private TimeSpan _keepRunningTimeSpan;
+
+    [ObservableProperty]
+    private int _runCount = 0;
+    [ObservableProperty]
+    private int _saveBmpCount = 0;
+
+    [ObservableProperty]
+    private double _currentHandleTime = 0;
+    [ObservableProperty]
+    private double _averageHandleTime = 0;
+    [ObservableProperty]
+    private string _keepRunningTime = "00:00";
+    #endregion
+
+
+    #region 持续运行按钮状态切换
+    public string KeepRunningButtonContent => IsKeepRunning ? "停止" : "持续运行";
+    public SymbolIcon KeepRunningButtonIcon => IsKeepRunning ? new SymbolIcon { Symbol = SymbolRegular.Stop24, Filled = true } : new SymbolIcon { Symbol = SymbolRegular.ArrowRepeatAll24, Filled = true };
+    public string KeepRunningAppearance => IsKeepRunning ? "Danger" : "Primary";
+    #endregion
+
+
+    public bool IsImageCountMoreThanOne => ImagePathList.Count > 1;
+    public int ImageCount => ImagePathList.Count;
+    public bool IsExistInput => InputList.Count > 0;
+
+
+    public RunningPageVM()
+    {
+        // IRecipient<PropertyChangedMessage<string>> 需要设置 IsActive = true，否则无法接收
+        IsActive = true;
+
+        _logger = App.Current.Services.GetRequiredService<ILogger>();
+        _logger.Information($"RunningPageVM");
+
+        _keepRunningTimer.Interval = TimeSpan.FromSeconds(0.5);
+        _keepRunningTimer.Tick += (sender, e) =>
         {
-            // IRecipient<PropertyChangedMessage<string>> 需要设置 IsActive = true，否则无法接收
-            IsActive = true;
+            KeepRunningTime = _keepRunningStopwatch.Elapsed.ToString(@"mm\:ss");
+        };
+    }
 
+    [RelayCommand]
+    public void Loaded()
+    {
+        InitControls();
 
-            //Messenger.Register<ValueChangedMessage<string>, string>(this, "updateVppFilePath", (value, message) =>
+        void InitControls()
+        {
+            RecordDisplayControl.AutoFit = true;
+            RecordDisplayControl.Image = ToolBlock.Inputs["InputImage"]?.Value as ICogImage;
+            // TODO FindCount 绑定不上
+            InputList = ToolBlock.Inputs
+                .Where(x => x.Name != "InputImage")
+                .Select((x, index) => new InputItem(index + 1, x.ValueType.Name, x.Name, x.Value)).ToList();
+
+            // TODO 调试用
+            //try
             //{
-            //    MessageBox.Show("debug receive");
-            //    VppFilePath = message.Value;
-            //    RecordDisplayControl!.Record = null;
-            //});
+            //    string folderPath = $@"D:\DotNet-Projects\03_机器视觉项目\WPF-VisionPro-Demo\bin\x64\Debug\net48\VppData\零件瑕疵检测\img";
+            //    ImagePathList = Directory.GetFiles(folderPath, "*.*", SearchOption.TopDirectoryOnly)
+            //        .Where(x => x.EndsWith(".bmp") || x.EndsWith(".jpg") || x.EndsWith(".jpeg") || x.EndsWith(".png") || x.EndsWith(".ttf") || x.EndsWith("."))
+            //        .ToList();
 
+            //    //加载图像到 ImageFileTool
+            //    ImageFileTool.Operator.Open(ImagePathList[CurrentIndex - 1], CogImageFileModeConstants.Read);
+            //    ImageFileTool.Run();
 
-            _logger = App.Current.Services.GetRequiredService<ILogger>();
-            _logger.Information($"RunningPageVM");
+            //    //RecordDisplayControl.Record = null;
+            //    RecordDisplayControl.Image = ImageFileTool.OutputImage;
+            //    ToolBlock.Inputs["InputImage"].Value = ImageFileTool.OutputImage;
 
+            //    // TODO FindCount 绑定不上
+            //    InputList = ToolBlock.Inputs
+            //        .Where(x => x.Name != "InputImage")
+            //        .Select((x, index) => new InputItem(index + 1, x.ValueType.Name, x.Name, x.Value)).ToList();
 
-            //string dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VppData");
-            //string vppName = "零件瑕疵检测（支持输入阈值、查找数量，并显示在图像上）TB.vpp";
-
-            //string path = Path.Combine(dir, vppName);
-            //VppFilePath = path;
-
-            // 加载 vpp，比较耗时，放到构造函数中，而不是 Loaded，导航切换会触发 Loaded
-            //ToolBlock = (CogToolBlock)CogSerializer.LoadObjectFromFile(VppFilePath);
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show("加载文件夹下的图像失败：" + ex.Message);
+            //    return;
+            //}
         }
-
-        [RelayCommand]
-        public void Loaded()
-        {
-            //string dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VppData");
-            //string vppName = "零件瑕疵检测TB.vpp";
-
-            //string path = Path.Combine(dir, vppName);
-
-            // 加载 vpp，比较耗时
-            //ToolBlock = (CogToolBlock)CogSerializer.LoadObjectFromFile(VppFilePath);
-
-            InitControls();
-            // TODO watch toolblock 变化再重新加载，否则就不加载，避免重新加载耗时
-            void InitControls()
-            {
-                RecordDisplayControl.AutoFit = true;
-                // TODO FindCount 绑定不上
-                InputList = ToolBlock.Inputs
-                    .Where(x => x.Name != "InputImage")
-                    .Select((x, index) => new InputItem(index + 1, x.ValueType.Name, x.Name, x.Value)).ToList();
-            }
-        }
+    }
 
 
-        [RelayCommand]
-        public void UnLoaded()
-        {
-            // ToolBlockEditV2Instance.Dispose() 似乎没有释放资源，需要手动调用 GC.Collect()
-            // GC.Collect();
-        }
+    [RelayCommand]
+    public void UnLoaded()
+    {
+        // ToolBlockEditV2Instance.Dispose() 似乎没有释放资源，需要手动调用 GC.Collect()
+        // GC.Collect();
+    }
 
-        [RelayCommand]
-        public void LoadImage()
-        {
-            // 清空 ImagePathList
-            ImagePathList = new();
-            CurrentIndex = 1;
-            VistaOpenFileDialog openFileDialog = new VistaOpenFileDialog();
-            openFileDialog.Filter = "图像文件|*.bmp;*.jpg;*.jpeg;*.png;*.tif;*.tiff";
-            openFileDialog.Title = "选择图像";
-            openFileDialog.Multiselect = false;
-            openFileDialog.InitialDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VppData");
-            if (openFileDialog.ShowDialog() == true)
-            {
-                try
-                {
-                    string imagePath = openFileDialog.FileName;
-                    ImagePathList = new List<string> { imagePath };
-
-                    //加载图像到 ImageFileTool
-                    ImageFileTool.Operator.Open(imagePath, CogImageFileModeConstants.Read);
-                    ImageFileTool.Run();
-
-                    RecordDisplayControl.Record = null;
-                    RecordDisplayControl.Image = ImageFileTool.OutputImage;
-                    ToolBlock.Inputs["InputImage"].Value = ImageFileTool.OutputImage;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("加载图像失败：" + ex.Message);
-                    return;
-                }
-            }
-        }
-
-        [RelayCommand]
-        public void LoadFolder()
-        {
-            VistaFolderBrowserDialog folderBrowserDialog = new VistaFolderBrowserDialog();
-            folderBrowserDialog.Description = "选择文件夹";
-            folderBrowserDialog.Multiselect = false;
-            folderBrowserDialog.ShowNewFolderButton = true;
-            folderBrowserDialog.SelectedPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VppData");
-            if (folderBrowserDialog.ShowDialog() == true)
-            {
-                string folderPath = folderBrowserDialog.SelectedPath;
-                ImagePathList = Directory.GetFiles(folderPath, "*.*", SearchOption.TopDirectoryOnly)
-                    .Where(x => x.EndsWith(".bmp") || x.EndsWith(".jpg") || x.EndsWith(".jpeg") || x.EndsWith(".png") || x.EndsWith(".ttf") || x.EndsWith("."))
-                    .ToList();
-
-                if (ImagePathList.Count == 0)
-                {
-                    MessageBox.Show("文件夹中没有图像文件");
-                    return;
-                }
-
-                try
-                {
-                    CurrentIndex = 1;
-                    //加载图像到 ImageFileTool
-                    ImageFileTool.Operator.Open(ImagePathList[CurrentIndex - 1], CogImageFileModeConstants.Read);
-                    ImageFileTool.Run();
-
-                    RecordDisplayControl.Record = null;
-                    RecordDisplayControl.Image = ImageFileTool.OutputImage;
-                    ToolBlock.Inputs["InputImage"].Value = ImageFileTool.OutputImage;
-                }
-                catch (Exception ex)
-                {
-                    System.Windows.MessageBox.Show("加载文件夹下的图像失败：" + ex.Message);
-                    return;
-                }
-
-            }
-        }
-
-        [RelayCommand]
-        public void Run()
+    [RelayCommand]
+    public void LoadImage()
+    {
+        VistaOpenFileDialog openFileDialog = new VistaOpenFileDialog();
+        openFileDialog.Filter = "图像文件|*.bmp;*.jpg;*.jpeg;*.png;*.tif;*.tiff";
+        openFileDialog.Title = "选择图像";
+        openFileDialog.Multiselect = false;
+        openFileDialog.InitialDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VppData");
+        if (openFileDialog.ShowDialog() == true)
         {
             try
             {
-                RunToolBlock();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("运行失败：" + ex.Message);
-                return;
-            }
-        }
-
-        private void RunToolBlock()
-        {
-            if (ImagePathList.Count > 0)
-            {
-                ImageFileTool.Operator.Open(ImagePathList[CurrentIndex - 1], CogImageFileModeConstants.Read);
+                string imagePath = openFileDialog.FileName;
+                // 重新赋值 ImagePathList 触发通知
+                ImagePathList = new List<string> { imagePath };
+                CurrentIndex = 1;
+                //加载图像到 ImageFileTool
+                ImageFileTool.Operator.Open(imagePath, CogImageFileModeConstants.Read);
                 ImageFileTool.Run();
+
                 RecordDisplayControl.Record = null;
                 RecordDisplayControl.Image = ImageFileTool.OutputImage;
                 ToolBlock.Inputs["InputImage"].Value = ImageFileTool.OutputImage;
             }
-
-            // 将输入参数赋值给 ToolBlock
-            foreach (CogToolBlockTerminal item in ToolBlock.Inputs)
+            catch (Exception ex)
             {
-                if (item.Name == "InputImage") continue;
-                item.Value = InputList.First(x => x.Name == item.Name).Value;
+                MessageBox.Show("加载图像失败：" + ex.Message);
+                return;
+            }
+        }
+    }
+
+    [RelayCommand]
+    public void LoadFolder()
+    {
+        VistaFolderBrowserDialog folderBrowserDialog = new VistaFolderBrowserDialog();
+        folderBrowserDialog.Description = "选择文件夹";
+        folderBrowserDialog.Multiselect = false;
+        folderBrowserDialog.ShowNewFolderButton = true;
+        folderBrowserDialog.SelectedPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VppData");
+        if (folderBrowserDialog.ShowDialog() == true)
+        {
+            string folderPath = folderBrowserDialog.SelectedPath;
+            ImagePathList = Directory.GetFiles(folderPath, "*.*", SearchOption.TopDirectoryOnly)
+                .Where(x => x.EndsWith(".bmp") || x.EndsWith(".jpg") || x.EndsWith(".jpeg") || x.EndsWith(".png") || x.EndsWith(".ttf") || x.EndsWith("."))
+                .ToList();
+
+            if (ImagePathList.Count == 0)
+            {
+                MessageBox.Show("文件夹中没有图像文件");
+                return;
             }
 
-            ToolBlock.Run();
+            try
+            {
+                CurrentIndex = 1;
+                //加载图像到 ImageFileTool
+                ImageFileTool.Operator.Open(ImagePathList[CurrentIndex - 1], CogImageFileModeConstants.Read);
+                ImageFileTool.Run();
+
+                RecordDisplayControl.Record = null;
+                RecordDisplayControl.Image = ImageFileTool.OutputImage;
+                ToolBlock.Inputs["InputImage"].Value = ImageFileTool.OutputImage;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("加载文件夹下的图像失败：" + ex.Message);
+                return;
+            }
+
+        }
+    }
+
+    [RelayCommand]
+    public void Run()
+    {
+        try
+        {
+            RunToolBlock();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("运行失败：" + ex.Message);
+            return;
+        }
+    }
+
+
+    [RelayCommand]
+    public void KeepRunning()
+    {
+        try
+        {
+            IsKeepRunning = !IsKeepRunning;
+
+            if (IsKeepRunning)
+            {
+                _keepRunningStopwatch.Restart();
+                _keepRunningTimer.Start();
+                _keepRunningTimeSpan = TimeSpan.Zero;
+                KeepRunningTime = _keepRunningTimeSpan.ToString(@"mm\:ss");
+
+                CurrentHandleTime = 0;
+                AverageHandleTime = 0;
+                RunCount = 0;
+                SaveBmpCount = 0;
+                _totalHandleTime = 0;
+            }
+            else
+            {
+                _keepRunningTimer.Stop();
+                _keepRunningStopwatch.Stop();
+            }
+
+            Task.Run(async () =>
+            {
+                while (IsKeepRunning)
+                {
+                    await App.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        CurrentIndex++;
+                        if (CurrentIndex > ImagePathList.Count)
+                        {
+                            CurrentIndex = 1;
+                        }
+                    });
+                    RunToolBlock();
+                    await Task.Delay(KeepRunningDelayTime);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            IsKeepRunning = false;
+            MessageBox.Show("持续运行失败：" + ex.Message);
+            return;
+        }
+    }
+
+    private void RunToolBlock()
+    {
+        if (ImagePathList.Count > 0)
+        {
+            // 传入原图格式
+            ImageFileTool.Operator.Open(ImagePathList[CurrentIndex - 1], CogImageFileModeConstants.Read);
+            ImageFileTool.Run();
+
+            RecordDisplayControl.Record = null;
+            RecordDisplayControl.Image = ImageFileTool.OutputImage;
+            ToolBlock.Inputs["InputImage"].Value = ImageFileTool.OutputImage;
+
+            // 转为 8 位图，并释放资源
+            //using (Bitmap bmp = new Bitmap(ImagePathList[CurrentIndex - 1]))
+            //{
+            //    _currentImage = new CogImage8Grey(bmp);
+            //    RecordDisplayControl.Record = null;
+            //    RecordDisplayControl.Image = _currentImage;
+            //    ToolBlock.Inputs["InputImage"].Value = _currentImage;
+            //}
+        }
+
+        // 将输入参数赋值给 ToolBlock
+        foreach (CogToolBlockTerminal item in ToolBlock.Inputs)
+        {
+            if (item.Name == "InputImage") continue;
+            item.Value = InputList.First(x => x.Name == item.Name).Value;
+        }
+
+        _currentRunStopwatch.Restart();
+        ToolBlock.Run();
+        _currentRunStopwatch.Stop();
+
+        // 使用同步 Invoke，不能使用异步 InvokeAsync，可能会出现 RunToolBlock 时，CurrentIndex 还没更新
+        App.Current.Dispatcher.Invoke(() =>
+        {
+            CurrentHandleTime = Math.Round(_currentRunStopwatch.Elapsed.TotalMilliseconds, 2);
+            _totalHandleTime += CurrentHandleTime;
+            RunCount++;
+            AverageHandleTime = Math.Round(_totalHandleTime / RunCount, 2);
+
 
             RecordDisplayControl.Record = ToolBlock.CreateLastRunRecord().SubRecords[0];
             OutputList = ToolBlock.Outputs
-                .Select((x, index) => new OutputItem(index + 1, x.Name, x.Value))
-                .ToList();
-        }
+            .Select((x, index) => new OutputItem(index + 1, x.Name, x.Value))
+            .ToList();
+        });
 
-        [RelayCommand(CanExecute = nameof(IsImageCountMoreThanOne))]
-        public void NextImage()
+        _currentRunStopwatch.Reset();
+        if(IsSaveBmp)
         {
-            try
-            {
-                CurrentIndex++;
-                if (CurrentIndex >= ImagePathList.Count)
-                {
-                    CurrentIndex = 1;
-                }
-
-                RunToolBlock();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("加载下一张图像失败：" + ex.Message);
-                return;
-            }
+            SaveBmp();
         }
+    }
 
-        [RelayCommand(CanExecute = nameof(IsImageCountMoreThanOne))]
-        public void PreviousImage()
+    [RelayCommand(CanExecute = nameof(IsImageCountMoreThanOne))]
+    public void NextImage()
+    {
+        try
         {
-            try
+            CurrentIndex++;
+            if (CurrentIndex > ImagePathList.Count)
             {
-                CurrentIndex--;
-                if (CurrentIndex <= 0)
-                {
-                    CurrentIndex = ImagePathList.Count;
-                }
+                CurrentIndex = 1;
+            }
 
-                RunToolBlock();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("加载上一张图像失败：" + ex.Message);
-                return;
-            }
+            RunToolBlock();
         }
+        catch (Exception ex)
+        {
+            MessageBox.Show("加载下一张图像失败：" + ex.Message);
+            return;
+        }
+    }
 
+    [RelayCommand(CanExecute = nameof(IsImageCountMoreThanOne))]
+    public void PreviousImage()
+    {
+        try
+        {
+            CurrentIndex--;
+            if (CurrentIndex <= 0)
+            {
+                CurrentIndex = ImagePathList.Count;
+            }
+
+            RunToolBlock();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("加载上一张图像失败：" + ex.Message);
+            return;
+        }
+    }
+
+    private void SaveBmp()
+    {
+        Task.Run(() =>
+        {
+            if (!Directory.Exists(BmpFileDir))
+            {
+                Directory.CreateDirectory(BmpFileDir);
+            }
+
+            using (Bitmap? bmp = RecordDisplayControl.CreateContentBitmap(0) as Bitmap)
+            {
+                string savePath = Path.Combine(BmpFileDir, $"{DateTime.Now:yyyyMMdd-HHmmssfff}.bmp");
+                bmp?.Save(savePath, ImageFormat.Jpeg);
+            }
+
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                lock (_lockObj)
+                {
+                    SaveBmpCount++;
+                }
+            });
+        });
+    }
+
+    [RelayCommand]
+    public void ClearStatistics() 
+    {
+        RunCount = 0;
+        SaveBmpCount = 0;
+        KeepRunningTime = "00:00";
+        CurrentHandleTime = 0;
+        AverageHandleTime = 0;
+        _totalHandleTime = 0;
     }
 }
+

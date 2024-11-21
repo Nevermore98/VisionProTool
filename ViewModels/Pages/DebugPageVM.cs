@@ -8,6 +8,7 @@ using Ookii.Dialogs.Wpf;
 using System.IO;
 using System.Windows;
 using Wpf.Ui;
+using WPF_VisionPro_Demo.Views.Windows;
 using MessageBox = System.Windows.MessageBox;
 using MessageBoxButton = System.Windows.MessageBoxButton;
 
@@ -17,6 +18,7 @@ namespace WPF_VisionPro_Demo.ViewModels.Pages
     {
         public CogToolBlockEditV2 ToolBlockEditV2Control { get; set; }
 
+        private LoadingWindow _loadingWindow;
 
         [ObservableProperty]
         private string _name = "脚本";
@@ -26,13 +28,6 @@ namespace WPF_VisionPro_Demo.ViewModels.Pages
         [ObservableProperty]
         [NotifyPropertyChangedRecipients]
         private string _vppFilePath = "";
-
-        partial void OnVppFilePathChanged(string value)
-        {
-            // 只在 VppFilePath 改变时加载，避免每次 loaded 就加载耗费性能
-            var toolBlock = CogSerializer.LoadObjectFromFile(value) as CogToolBlock;
-            if (ToolBlockEditV2Control != null) ToolBlockEditV2Control.Subject = toolBlock;
-        }
 
         private ISnackbarService snackbarService;
 
@@ -52,15 +47,15 @@ namespace WPF_VisionPro_Demo.ViewModels.Pages
         {
             if (ToolBlockEditV2Control.Subject == null)
             {
-                var toolBlock = CogSerializer.LoadObjectFromFile(VppFilePath) as CogToolBlock;
-                ToolBlockEditV2Control.Subject = toolBlock;
+                _loadingWindow = App.Current.Services.GetRequiredService<LoadingWindow>();
+                _loadingWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                _loadingWindow.Owner = App.Current.Services.GetRequiredService<MainWindow>();
+                _loadingWindow.Show();
+                _loadingWindow.Close();
             }
 
-            //VppFilePath = App.Current.Services.GetRequiredService<DebugPageVM>().VppFilePath;
-            //ToolBlockEditV2Control.Subject = App.Current.Services.GetRequiredService<DebugPageVM>().ToolBlock;
-
-            //var toolBlock = CogSerializer.LoadObjectFromFile(VppFilePath) as CogToolBlock;
-            //ToolBlockEditV2Control.Subject = toolBlock;
+            // 需要每次加载时都重新加载 ToolBlock，这样运行页与调试页的图像才会相同
+            ToolBlockEditV2Control.Subject = App.Current.Services.GetRequiredService<RunningPageVM>().ToolBlock;
         }
 
   
@@ -85,9 +80,9 @@ namespace WPF_VisionPro_Demo.ViewModels.Pages
                 MessageBox.Show("加载成功", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 VppFilePath = dialog.FileName;
-                //Messenger.Send(new ValueChangedMessage<string>(VppFilePath), "updateVppFilePath");
             }
         }
+
         [RelayCommand]
         public void SaveToolBlock()
         {
@@ -98,17 +93,17 @@ namespace WPF_VisionPro_Demo.ViewModels.Pages
             else
             {
                 CogSerializer.SaveObjectToFile(ToolBlockEditV2Control.Subject, VppFilePath);
-                //snackbarService.Show( 
-                //                     "Don't Blame Yourself.", 
-                //                     "No Witcher's Ever Died In His Bed.", 
-                //                     ControlAppearance.Primary, 
-                //                     new SymbolIcon(SymbolRegular.Fluent24), 
-                //                     TimeSpan.FromSeconds(1) 
-                //                 ); 
-                MessageBox.Show("保存成功", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
 
+                MessageBox.Show("保存成功", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+
+
+                // TODO 保存时，通知 RunningPageVM 重新加载 ToolBlock
+                //Messenger.Send(new PropertyChangedMessage<string>(this, VppFilePath, VppFilePath, VppFilePath));
+                var toolBlock = CogSerializer.LoadObjectFromFile(VppFilePath) as CogToolBlock;
+                App.Current.Services.GetRequiredService<RunningPageVM>().ToolBlock = toolBlock;
+            }
         }
+
         [RelayCommand]
         public void SaveAsToolBlock()
         {

@@ -11,7 +11,6 @@ namespace WPF_VisionPro_Demo.ViewModels.Windows
 
         public MainWindowVM()
         {
-            //RootNavigation.Navigate(typeof(MyDashboardClass));
         }
 
 

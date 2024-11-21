@@ -36,20 +36,30 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" >
-            <ui:TextBox IsReadOnly="True"
-                        Text="{Binding VppFilePath}" />
+        <StackPanel Grid.Row="0">
+            <ui:TextBox IsReadOnly="True" Text="{Binding VppFilePath}" />
             <DockPanel Margin="0,6,0,0" LastChildFill="False">
-                <ui:Button Command="{Binding SaveToolBlockCommand}"
-                           Content="保存"
-                           DockPanel.Dock="Left" />
-                <ui:Button Command="{Binding SaveAsToolBlockCommand}"
-                           Content="另存为" Margin="6,0,0,0"
-                           DockPanel.Dock="Left" />
-                <ui:Button Command="{Binding LoadToolBlockCommand}"
-                           Content="加载"
-                           Margin="0,0,0,0"
-                           DockPanel.Dock="Right" />
+                <ui:Button Margin="0,0,0,0"
+                           Appearance="Primary"
+                           Command="{Binding LoadToolBlockCommand}"
+                           Content="打开"
+                           Icon="{ui:SymbolIcon Document24,
+                                                Filled=False}" />
+
+                <WrapPanel DockPanel.Dock="Right">
+                    <ui:Button Appearance="Primary"
+                               Command="{Binding SaveToolBlockCommand}"
+                               Content="保存"
+                               DockPanel.Dock="Left"
+                               Icon="{ui:SymbolIcon Save24,
+                                                    Filled=False}" />
+                    <ui:Button Margin="6,0,0,0"
+                               Command="{Binding SaveAsToolBlockCommand}"
+                               Content="另存为"
+                               DockPanel.Dock="Left"
+                               Icon="{ui:SymbolIcon DocumentSave24}" />
+                </WrapPanel>
+
             </DockPanel>
         </StackPanel>
 
@@ -63,9 +73,5 @@
                 <cogtool:CogToolBlockEditV2 x:Name="cogToolBlockEditV2" />
             </WindowsFormsHost>
         </Border>
-
-
-    
-
     </Grid>
 </Page>

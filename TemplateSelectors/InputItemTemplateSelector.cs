@@ -8,6 +8,7 @@ namespace WPF_VisionPro_Demo.TemplateSelectors
     {
         public DataTemplate IntTemplate { get; set; }
         public DataTemplate DoubleTemplate { get; set; }
+        public DataTemplate BoolTemplate { get; set; }
         public DataTemplate TextTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
@@ -19,6 +20,7 @@ namespace WPF_VisionPro_Demo.TemplateSelectors
                     "Int32" => IntTemplate,
                     "Double" => DoubleTemplate,
                     "String" => TextTemplate,
+                    "Boolean" => BoolTemplate,
                     _ => TextTemplate
                 };
             }
