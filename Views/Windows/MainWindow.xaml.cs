@@ -28,6 +28,7 @@ namespace WPF_VisionPro_Demo.Views.Windows
 
         private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            // 设置导航视图高度
             var page = VisualTreeHelperExtensions.FindChild<Page>(RootNavigationView);
             if (page != null) page.Height = ActualHeight - 48;
         }

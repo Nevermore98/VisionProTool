@@ -3,25 +3,26 @@
                     xmlns:tempselc="clr-namespace:WPF_VisionPro_Demo.TemplateSelectors"
                     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:conv="clr-namespace:WPF_VisionPro_Demo.Converters"
                     xmlns:vconv="http://schemas.superdev.ch/valueconverters/2016/xaml">
+    <conv:ObjectToIntConverter x:Key="ObjectToIntConverter"/>
+  
     <DataTemplate x:Key="IntTemplate">
         <Grid Margin="0,3,0,3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="140" />
-                <ColumnDefinition Width="30" />
             </Grid.ColumnDefinitions>
             <ui:TextBlock Grid.Column="0"
                           VerticalAlignment="Center"
                           Style="{StaticResource BodyTextBlockStyle}"
                           Text="{Binding Name, StringFormat={}{0}：}" />
+            <!--需要把 object 类型的 value 转为 int，才能绑定上，还不知道 double 为什么不需要-->
             <ui:NumberBox Grid.Column="1"
                           ClearButtonEnabled="False"
                           MaxDecimalPlaces="0"
-                          Value="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          Value="{Binding Value, Mode=TwoWay, Converter={StaticResource ObjectToIntConverter}, UpdateSourceTrigger=PropertyChanged}"
                           Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <ui:TextBlock Grid.Column="2" Text="{Binding Value}"/>
-            <!-- Value="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 绑定不上 -->
         </Grid>
     </DataTemplate>
 

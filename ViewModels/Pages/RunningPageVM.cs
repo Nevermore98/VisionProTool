@@ -135,7 +135,6 @@ public partial class RunningPageVM : ObservableRecipient, IRecipient<PropertyCha
         {
             RecordDisplayControl.AutoFit = true;
             RecordDisplayControl.Image = ToolBlock.Inputs["InputImage"]?.Value as ICogImage;
-            // TODO FindCount 绑定不上
             InputList = ToolBlock.Inputs
                 .Where(x => x.Name != "InputImage")
                 .Select((x, index) => new InputItem(index + 1, x.ValueType.Name, x.Name, x.Value)).ToList();
