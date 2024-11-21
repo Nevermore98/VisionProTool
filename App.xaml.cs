@@ -89,6 +89,8 @@ namespace WPF_VisionPro_Demo
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            RegisterEvents();
+
             // 优化 winform 控件样式
             System.Windows.Forms.Application.EnableVisualStyles();
 
@@ -102,6 +104,90 @@ namespace WPF_VisionPro_Demo
             var mainWindow = Services.GetRequiredService<MainWindow>();
             loadingWindow.Close();
             mainWindow.Show();
+        }
+
+
+        /// <summary>
+        /// 注册异常处理事件
+        /// </summary>
+        private void RegisterEvents()
+        {
+            //Task线程内未捕获异常处理事件
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+
+            //UI线程未捕获异常处理事件（UI主线程）
+            this.DispatcherUnhandledException += App_DispatcherUnhandledException;
+
+            //非UI线程未捕获异常处理事件(例如自己创建的一个子线程)
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        private static void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            try
+            {
+                var exception = e.Exception as Exception;
+                if (exception != null)
+                {
+                    HandleException(exception);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                e.SetObserved();
+            }
+        }
+
+        //非UI线程未捕获异常处理事件(例如自己创建的一个子线程)      
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            try
+            {
+                var exception = e.ExceptionObject as Exception;
+                if (exception != null)
+                {
+                    HandleException(exception);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                //ignore
+            }
+        }
+
+        //UI线程未捕获异常处理事件（UI主线程）
+        private static void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            try
+            {
+                HandleException(e.Exception);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+            finally
+            {
+                //处理完后，我们需要将Handler=true表示已此异常已处理过
+                e.Handled = true;
+            }
+        }
+        private static void HandleException(Exception e)
+        {
+            //记录日志
+            Current.Services.GetRequiredService<ILogger>().Error(e, e.Message);
+
+            //MessageBox.Show(e.Source + "\r\n@@" + Environment.NewLine + e.Message + "\r\n##" + Environment.NewLine, "程序异常", MessageBoxButton.OK, MessageBoxImage.Error);
+
+
         }
     }
 
