@@ -63,8 +63,7 @@
             </DockPanel>
         </StackPanel>
 
-        <Border x:Name="border"
-                Grid.Row="1"
+        <Border Grid.Row="1"
                 Margin="0,6,0,0"
                 Padding="10,10,10,0"
                 Background="#f0f0f0"

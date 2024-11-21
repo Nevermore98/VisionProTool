@@ -44,8 +44,7 @@
             <ColumnDefinition Width="380" />
         </Grid.ColumnDefinitions>
 
-        <Border x:Name="border"
-                Grid.Column="0"
+        <Border Grid.Column="0"
                 Padding="16,16,2,2"
                 Background="#f0f0f0"
                 CornerRadius="4">

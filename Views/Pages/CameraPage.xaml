@@ -5,6 +5,7 @@
       xmlns:cogtool="clr-namespace:Cognex.VisionPro.ToolBlock;assembly=Cognex.VisionPro.ToolGroup.Controls"
       xmlns:conv="clr-namespace:WPF_VisionPro_Demo.Converters"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:local="clr-namespace:WPF_VisionPro_Demo.Views.Pages"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:pages="clr-namespace:WPF_VisionPro_Demo.ViewModels.Pages"
@@ -14,16 +15,31 @@
       d:DesignWidth="800"
       mc:Ignorable="d">
 
-    <StackPanel>
-        <TextBlock Text="相机采集 TODO" />
-        <Border x:Name="border"
-                Padding="16,16,2,2"
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Unloaded">
+            <i:InvokeCommandAction Command="{Binding UnloadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="相机采集 TODO" />
+
+
+        <Border Grid.Row="1"
+                Padding="10"
                 Background="#f0f0f0"
                 CornerRadius="4">
-            <WindowsFormsHost  x:Name="windowsFormsHost"
-                              UseLayoutRounding="True">
-                <cog:CogAcqFifoEditV2 x:Name="cogAcqFifoCtlV2" />
+            <WindowsFormsHost x:Name="windowsFormsHost" UseLayoutRounding="True">
+                <cog:CogAcqFifoEditV2 x:Name="cogAcqFifoEditV2" />
             </WindowsFormsHost>
         </Border>
-    </StackPanel>
+    </Grid>
 </Page>

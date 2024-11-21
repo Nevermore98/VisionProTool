@@ -100,13 +100,14 @@ namespace WPF_VisionPro_Demo
             // 先预创建视图，后面切换导航就不用等待
             Services.GetRequiredService<DebugPage>();
             Services.GetRequiredService<RunningPage>();
+            Services.GetRequiredService<CameraPage>();
 
             var mainWindow = Services.GetRequiredService<MainWindow>();
             loadingWindow.Close();
             mainWindow.Show();
         }
 
-
+        #region 全局异常捕获
         /// <summary>
         /// 注册异常处理事件
         /// </summary>
@@ -189,6 +190,7 @@ namespace WPF_VisionPro_Demo
 
 
         }
+        #endregion
     }
 
 }
