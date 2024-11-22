@@ -12,7 +12,16 @@
              d:DesignHeight="450"
              d:DesignWidth="800"
              mc:Ignorable="d">
-    <StackPanel>
-        
+    <StackPanel Margin="10,20,10,0">
+        <ui:TextBlock FontTypography="Subtitle" Text="关于" />
+        <ui:TextBlock Style="{StaticResource BodyTextBlockStyle}" Text="{Binding Version, StringFormat='{}版本：{0}'}" />
+        <WrapPanel>
+            <ui:TextBlock VerticalAlignment="Center" Style="{StaticResource BodyTextBlockStyle}" Text="VisionPro 调试工具，使用 WPF + WPF-UI + Toolkit.mvvm + IOC 构建" />
+            <ui:HyperlinkButton Margin="10,0,0,0"
+                                Content="仓库地址"
+                                Icon="{ui:SymbolIcon Home24}"
+                                NavigateUri="https://github.com/Nevermore98/VisionProTool" />
+        </WrapPanel>
+
     </StackPanel>
 </UserControl>

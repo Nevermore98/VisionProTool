@@ -1,9 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace VisionPro_Tool.ViewModels.Pages
 {
@@ -11,5 +7,13 @@ namespace VisionPro_Tool.ViewModels.Pages
     {
         [ObservableProperty]
         private string _name = "设置";
+
+        [ObservableProperty]
+        private string _version = "";
+
+        public SettingsPageVM()
+        {
+            Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        }
     }
 }
