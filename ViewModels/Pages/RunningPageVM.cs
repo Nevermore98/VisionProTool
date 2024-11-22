@@ -28,7 +28,7 @@ public partial class RunningPageVM : ObservableRecipient, IRecipient<PropertyCha
         {
             VppFilePath = debugPage.VppFilePath;
             VppFileName = Path.GetFileNameWithoutExtension(VppFilePath);
-            ToolBlock = (CogToolBlock)CogSerializer.LoadObjectFromFile(VppFilePath);
+            if (File.Exists(VppFilePath)) ToolBlock = (CogToolBlock)CogSerializer.LoadObjectFromFile(VppFilePath);
             if (RecordDisplayControl != null) RecordDisplayControl.Record = null;
         }
     }

@@ -37,13 +37,17 @@ public partial class DebugPageVM : ObservableRecipient
     public DebugPageVM()
     {
         _logger = App.Current.Services.GetRequiredService<ILogger>();
+        _loadingService = App.Current.Services.GetRequiredService<ILoadingService>();
 
-        string dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VppData", "零件瑕疵检测", "vpp");
+        string dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VppData","零件瑕疵检测", "vpp");
         string vppName = "零件瑕疵检测（支持输入阈值、查找数量）.vpp";
-
-        VppFilePath = Path.Combine(dir, vppName);
-        var toolBlock = CogSerializer.LoadObjectFromFile(VppFilePath) as CogToolBlock;
-        App.Current.Services.GetRequiredService<RunningPageVM>().ToolBlock = toolBlock;
+        string filePath = Path.Combine(dir, vppName);
+        if (File.Exists(filePath))
+        {
+            VppFilePath = filePath;
+            var toolBlock = CogSerializer.LoadObjectFromFile(VppFilePath) as CogToolBlock;
+            App.Current.Services.GetRequiredService<RunningPageVM>().ToolBlock = toolBlock;
+        }
     }
 
     [RelayCommand]
@@ -51,7 +55,6 @@ public partial class DebugPageVM : ObservableRecipient
     {
         if (ToolBlockEditV2Control.Subject == null)
         {
-            _loadingService = App.Current.Services.GetRequiredService<ILoadingService>();
             _loadingService.SetOwner(App.Current.Services.GetRequiredService<MainWindow>());
             _loadingService.Show("加载中", "加载 ToolBlock 中...", WindowStartupLocation.CenterOwner);
             ToolBlockEditV2Control.Subject = App.Current.Services.GetRequiredService<RunningPageVM>().ToolBlock;
@@ -81,11 +84,13 @@ public partial class DebugPageVM : ObservableRecipient
         dialog.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
         if (dialog.ShowDialog() == true)
         {
+            _loadingService.SetOwner(App.Current.Services.GetRequiredService<MainWindow>());
+            _loadingService.Show("加载中", "加载 ToolBlock 中...", WindowStartupLocation.CenterOwner);
             VppFilePath = dialog.FileName;
             ToolBlockEditV2Control.Subject = CogSerializer.LoadObjectFromFile(VppFilePath) as CogToolBlock;
+            _loadingService?.Close();
 
             _logger.Information($"加载 {VppFilePath}");
-            //MessageBox.Show("加载成功", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 
