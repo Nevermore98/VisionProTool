@@ -38,8 +38,8 @@ public partial class DebugPageVM : ObservableRecipient
     {
         _logger = App.Current.Services.GetRequiredService<ILogger>();
 
-        string dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VppData");
-        string vppName = "零件瑕疵检测（支持输入阈值、查找数量，并显示在图像上）TB.vpp";
+        string dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VppData", "零件瑕疵检测", "vpp");
+        string vppName = "零件瑕疵检测（支持输入阈值、查找数量）.vpp";
 
         VppFilePath = Path.Combine(dir, vppName);
         var toolBlock = CogSerializer.LoadObjectFromFile(VppFilePath) as CogToolBlock;

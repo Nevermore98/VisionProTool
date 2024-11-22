@@ -97,7 +97,7 @@
                               Style="{StaticResource SubtitleTextBlockStyle}"
                               Text="输入参数" />
                 <Border Margin="0,0,0,6"
-                        Padding="4"
+                        Padding="8"
                         BorderBrush="#f0f0f0"
                         BorderThickness="1"
                         CornerRadius="3">
@@ -110,7 +110,7 @@
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>
 
-                        <TextBlock Text="无输入参数" Visibility="{Binding IsExistInput, Converter={StaticResource BoolToVisibilityReConverter}}" />
+                        <TextBlock HorizontalAlignment="Center" Text="无输入参数" Visibility="{Binding IsExistInput, Converter={StaticResource BoolToVisibilityReConverter}}" />
                     </StackPanel>
                 </Border>
 

@@ -96,6 +96,33 @@
     <None Update="VppData\圆形文字识别TB.vpp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="VppData\圆形文字识别\img\cd_print.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\圆形文字识别\vpp\圆形文字识别TB.vpp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\多目标识别\img\1.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\多目标识别\img\2.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\多目标识别\img\3.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\多目标识别\img\4.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\多目标识别\img\5.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\多目标识别\img\6.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\多目标识别\vpp\多目标斑点卡尺.vpp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="VppData\零件瑕疵检测TB.vpp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -132,10 +159,22 @@
     <None Update="VppData\零件瑕疵检测\img\07_good.bmp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="VppData\零件瑕疵检测\vpp\零件瑕疵检测（支持输入阈值、查找数量）.vpp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测\vpp\零件瑕疵检测（支持输入阈值）.vpp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="VppData\零件瑕疵检测（支持输入阈值、PMCount）TB.vpp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="VppData\零件瑕疵检测（支持输入阈值、查找数量）.vpp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="VppData\零件瑕疵检测（支持输入阈值、查找数量，并显示在图像上）TB.vpp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\零件瑕疵检测（支持输入阈值）.vpp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="VppData\零件瑕疵检测（支持输入阈值）TB.vpp">

@@ -13,10 +13,6 @@
              d:DesignWidth="800"
              mc:Ignorable="d">
     <StackPanel>
-        <Button Content="hi" />
-        <ui:Button Appearance="Danger" Content="hi" Foreground="White" />
-        <ui:Button Appearance="Success" Content="hi" Foreground="White" />
-        <ui:Button Appearance="Primary" Content="WPF UI button with font icon" Icon="{ui:FontIcon '🌈'}" />
-        <ui:Button Appearance="Primary" Content="WPF UI button with font icon" Icon="{ui:SymbolIcon Symbol=Fluent24}" />
+        
     </StackPanel>
 </UserControl>
