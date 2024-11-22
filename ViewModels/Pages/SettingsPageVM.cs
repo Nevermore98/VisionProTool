@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WPF_VisionPro_Demo.ViewModels.Pages
+namespace VisionPro_Tool.ViewModels.Pages
 {
     public partial class SettingsPageVM : ObservableObject
     {

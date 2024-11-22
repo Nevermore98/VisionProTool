@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPF-VisionPro-Demo", "WPF-VisionPro-Demo.csproj", "{B33E3280-2A5B-4E29-952F-F27E3C2E80CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VisionPro-Tool", "VisionPro-Tool.csproj", "{B33E3280-2A5B-4E29-952F-F27E3C2E80CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

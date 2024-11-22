@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Wpf.Ui;
 
-namespace WPF_VisionPro_Demo.Services
+namespace VisionPro_Tool.Services
 {
     // from src/Wpf.Ui.Demo.Mvvm/Services/PageService.cs
     public class PageService : IPageService

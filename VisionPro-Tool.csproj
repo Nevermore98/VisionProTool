@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net48</TargetFramework>
     <LangVersion>10.0</LangVersion>
-    <RootNamespace>WPF_VisionPro_Demo</RootNamespace>
+    <RootNamespace>VisionPro_Tool</RootNamespace>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
@@ -12,6 +12,12 @@
     <Platforms>AnyCPU;x64</Platforms>
     <PackageIcon>ApplicationIcon.png</PackageIcon>
     <ApplicationIcon>Resources\MainWindowIcon.ico</ApplicationIcon>
+    <Authors>Nevermorey98</Authors>
+    <Description>Cognex VisionPro 调试工具，仅供学习使用</Description>
+    <PackageId>VisionPro Tool</PackageId>
+    <Product>VisionPro Tool</Product>
+    <Copyright>Cognex VisionPro 调试工具，仅供学习使用</Copyright>
+    <AssemblyName>VisionPro Tool</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

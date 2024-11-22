@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace WPF_VisionPro_Demo.Services
+namespace VisionPro_Tool.Services
 {
     public interface ILoadingService
     {

@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-namespace WPF_VisionPro_Demo.ViewModels.Windows
+namespace VisionPro_Tool.ViewModels.Windows
 {
     public partial class MainWindowVM :ObservableObject
     {

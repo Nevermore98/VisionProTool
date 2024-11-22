@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 
-namespace WPF_VisionPro_Demo.Utils
+namespace VisionPro_Tool.Utils
 {
     public static class VisualTreeHelperExtensions
     {

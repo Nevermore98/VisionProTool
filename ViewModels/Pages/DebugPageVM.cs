@@ -7,12 +7,12 @@ using Ookii.Dialogs.Wpf;
 using Serilog;
 using System.IO;
 using System.Windows;
-using WPF_VisionPro_Demo.Services;
-using WPF_VisionPro_Demo.Views.Windows;
+using VisionPro_Tool.Services;
+using VisionPro_Tool.Views.Windows;
 using MessageBox = System.Windows.MessageBox;
 using MessageBoxButton = System.Windows.MessageBoxButton;
 
-namespace WPF_VisionPro_Demo.ViewModels.Pages;
+namespace VisionPro_Tool.ViewModels.Pages;
 
 public partial class DebugPageVM : ObservableRecipient
 {
@@ -55,7 +55,7 @@ public partial class DebugPageVM : ObservableRecipient
             _loadingService.SetOwner(App.Current.Services.GetRequiredService<MainWindow>());
             _loadingService.Show("加载中", "加载 ToolBlock 中...", WindowStartupLocation.CenterOwner);
             ToolBlockEditV2Control.Subject = App.Current.Services.GetRequiredService<RunningPageVM>().ToolBlock;
-            Thread.Sleep(300);
+            Thread.Sleep(400);
             _loadingService?.Close();
         }
 

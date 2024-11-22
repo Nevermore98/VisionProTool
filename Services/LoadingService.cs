@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
-using WPF_VisionPro_Demo.Views.Windows;
+using VisionPro_Tool.Views.Windows;
 
-namespace WPF_VisionPro_Demo.Services;
+namespace VisionPro_Tool.Services;
 class LoadingService : ILoadingService
 {
     private LoadingWindow? _loadingWindow;

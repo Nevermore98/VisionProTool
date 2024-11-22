@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
-using WPF_VisionPro_Demo.ViewModels.Windows;
+using VisionPro_Tool.ViewModels.Windows;
 
-namespace WPF_VisionPro_Demo.Views.Windows
+namespace VisionPro_Tool.Views.Windows
 {
     /// <summary>
     /// LoadingWindow.xaml 的交互逻辑

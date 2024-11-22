@@ -15,10 +15,10 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Threading;
 using Wpf.Ui.Controls;
-using WPF_VisionPro_Demo.Models;
+using VisionPro_Tool.Models;
 using MessageBox = System.Windows.MessageBox;
 
-namespace WPF_VisionPro_Demo.ViewModels.Pages;
+namespace VisionPro_Tool.ViewModels.Pages;
 
 public partial class RunningPageVM : ObservableRecipient, IRecipient<PropertyChangedMessage<string>>
 {

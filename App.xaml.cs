@@ -2,11 +2,11 @@
 using Serilog;
 using System.Windows;
 using Wpf.Ui;
-using WPF_VisionPro_Demo.Services;
-using WPF_VisionPro_Demo.ViewModels.Pages;
-using WPF_VisionPro_Demo.ViewModels.Windows;
-using WPF_VisionPro_Demo.Views.Pages;
-using WPF_VisionPro_Demo.Views.Windows;
+using VisionPro_Tool.Services;
+using VisionPro_Tool.ViewModels.Pages;
+using VisionPro_Tool.ViewModels.Windows;
+using VisionPro_Tool.Views.Pages;
+using VisionPro_Tool.Views.Windows;
 using Serilog.Core;
 
 
@@ -25,7 +25,7 @@ namespace System.Runtime.CompilerServices
 }
 #endif
 
-namespace WPF_VisionPro_Demo
+namespace VisionPro_Tool
 {
     /// <summary>
     /// Interaction logic for App.xaml

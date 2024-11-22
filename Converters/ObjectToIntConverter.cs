@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
 
-namespace WPF_VisionPro_Demo.Converters
+namespace VisionPro_Tool.Converters
 {
     public class ObjectToIntConverter : IValueConverter
     {

@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Controls;
-using WPF_VisionPro_Demo.ViewModels.Pages;
-using WPF_VisionPro_Demo.Views.Windows;
+using VisionPro_Tool.ViewModels.Pages;
+using VisionPro_Tool.Views.Windows;
 
-namespace WPF_VisionPro_Demo.Views.Pages
+namespace VisionPro_Tool.Views.Pages
 {
     public partial class DebugPage : Page
     {

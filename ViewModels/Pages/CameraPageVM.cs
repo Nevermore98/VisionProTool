@@ -1,10 +1,10 @@
 ﻿using Cognex.VisionPro;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using WPF_VisionPro_Demo.Services;
-using WPF_VisionPro_Demo.Views.Windows;
+using VisionPro_Tool.Services;
+using VisionPro_Tool.Views.Windows;
 
-namespace WPF_VisionPro_Demo.ViewModels.Pages;
+namespace VisionPro_Tool.ViewModels.Pages;
 
 public partial class CameraPageVM : ObservableObject
 {

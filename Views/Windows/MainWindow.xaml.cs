@@ -4,11 +4,11 @@ using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 using System.Windows.Media;
 using Wpf.Ui.Controls;
-using WPF_VisionPro_Demo.Utils;
-using WPF_VisionPro_Demo.ViewModels.Windows;
-using WPF_VisionPro_Demo.Views.Pages;
+using VisionPro_Tool.Utils;
+using VisionPro_Tool.ViewModels.Windows;
+using VisionPro_Tool.Views.Pages;
 
-namespace WPF_VisionPro_Demo.Views.Windows
+namespace VisionPro_Tool.Views.Windows
 {
     public partial class MainWindow : Window
     {

@@ -1,9 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:tempselc="clr-namespace:WPF_VisionPro_Demo.TemplateSelectors"
+                    xmlns:tempselc="clr-namespace:VisionPro_Tool.TemplateSelectors"
                     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-                    xmlns:conv="clr-namespace:WPF_VisionPro_Demo.Converters"
+                    xmlns:conv="clr-namespace:VisionPro_Tool.Converters"
                     xmlns:vconv="http://schemas.superdev.ch/valueconverters/2016/xaml">
     <conv:ObjectToIntConverter x:Key="ObjectToIntConverter"/>
   

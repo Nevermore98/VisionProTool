@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Controls;
-using WPF_VisionPro_Demo.ViewModels.Pages;
+using VisionPro_Tool.ViewModels.Pages;
 
-namespace WPF_VisionPro_Demo.Views.Pages
+namespace VisionPro_Tool.Views.Pages
 {
     /// <summary>
     /// SettingsPage.xaml 的交互逻辑
