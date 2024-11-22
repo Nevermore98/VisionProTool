@@ -4,9 +4,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Ookii.Dialogs.Wpf;
+using Serilog;
 using System.IO;
 using System.Windows;
-using Wpf.Ui;
+using WPF_VisionPro_Demo.Services;
 using WPF_VisionPro_Demo.Views.Windows;
 using MessageBox = System.Windows.MessageBox;
 using MessageBoxButton = System.Windows.MessageBoxButton;
@@ -17,7 +18,9 @@ public partial class DebugPageVM : ObservableRecipient
 {
     public CogToolBlockEditV2 ToolBlockEditV2Control { get; set; }
 
-    private LoadingWindow _loadingWindow;
+    private ILoadingService _loadingService;
+    private ILogger _logger;
+
 
     [ObservableProperty]
     private string _name = "脚本";
@@ -25,14 +28,16 @@ public partial class DebugPageVM : ObservableRecipient
     private bool _isSizeChanging = false;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(VppFileName))]
     [NotifyPropertyChangedRecipients]
     private string _vppFilePath = "";
 
-    private ISnackbarService snackbarService;
-
+    public string VppFileName => Path.GetFileNameWithoutExtension(VppFilePath);
 
     public DebugPageVM()
     {
+        _logger = App.Current.Services.GetRequiredService<ILogger>();
+
         string dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "VppData");
         string vppName = "零件瑕疵检测（支持输入阈值、查找数量，并显示在图像上）TB.vpp";
 
@@ -46,11 +51,12 @@ public partial class DebugPageVM : ObservableRecipient
     {
         if (ToolBlockEditV2Control.Subject == null)
         {
-            _loadingWindow = App.Current.Services.GetRequiredService<LoadingWindow>();
-            _loadingWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            _loadingWindow.Owner = App.Current.Services.GetRequiredService<MainWindow>();
-            _loadingWindow.Show();
-            _loadingWindow.Close();
+            _loadingService = App.Current.Services.GetRequiredService<ILoadingService>();
+            _loadingService.SetOwner(App.Current.Services.GetRequiredService<MainWindow>());
+            _loadingService.Show("加载中", "加载 ToolBlock 中...", WindowStartupLocation.CenterOwner);
+            ToolBlockEditV2Control.Subject = App.Current.Services.GetRequiredService<RunningPageVM>().ToolBlock;
+            Thread.Sleep(300);
+            _loadingService?.Close();
         }
 
         // 需要每次加载时都重新加载 ToolBlock，这样运行页与调试页的图像才会相同
@@ -75,10 +81,11 @@ public partial class DebugPageVM : ObservableRecipient
         dialog.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
         if (dialog.ShowDialog() == true)
         {
-            ToolBlockEditV2Control.Subject = CogSerializer.LoadObjectFromFile(dialog.FileName) as CogToolBlock;
-            MessageBox.Show("加载成功", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
-
             VppFilePath = dialog.FileName;
+            ToolBlockEditV2Control.Subject = CogSerializer.LoadObjectFromFile(VppFilePath) as CogToolBlock;
+
+            _logger.Information($"加载 {VppFilePath}");
+            //MessageBox.Show("加载成功", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 
@@ -92,12 +99,10 @@ public partial class DebugPageVM : ObservableRecipient
         else
         {
             CogSerializer.SaveObjectToFile(ToolBlockEditV2Control.Subject, VppFilePath);
+            _logger.Information($"保存 {VppFilePath}");
 
             MessageBox.Show("保存成功", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
 
-
-            // TODO 保存时，通知 RunningPageVM 重新加载 ToolBlock
-            //Messenger.Send(new PropertyChangedMessage<string>(this, VppFilePath, VppFilePath, VppFilePath));
             var toolBlock = CogSerializer.LoadObjectFromFile(VppFilePath) as CogToolBlock;
             App.Current.Services.GetRequiredService<RunningPageVM>().ToolBlock = toolBlock;
         }
@@ -113,12 +118,19 @@ public partial class DebugPageVM : ObservableRecipient
         dialog.FileName = "未命名 ToolBlock.vpp";
         if (dialog.ShowDialog() == true)
         {
-            string path = dialog.FileName.EndsWith(".vpp") ? dialog.FileName : dialog.FileName + ".vpp";
+            var path = dialog.FileName.EndsWith(".vpp") ? dialog.FileName : dialog.FileName + ".vpp";
             CogSerializer.SaveObjectToFile(ToolBlockEditV2Control.Subject, path);
-            MessageBox.Show("另存为成功", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
-
+            // 保存文件后再通知 RunningPage 重新加载
             VppFilePath = path;
+            _logger.Information($"另存为 {VppFilePath}");
+            //MessageBox.Show("另存为成功", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
         }
+    }
+
+    [RelayCommand]
+    public void CopyVppFilePath()
+    {
+        Clipboard.SetText(VppFilePath);
     }
 }
 

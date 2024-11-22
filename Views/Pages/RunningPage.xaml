@@ -44,18 +44,40 @@
             <ColumnDefinition Width="380" />
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0"
-                Padding="16,16,2,2"
-                Background="#f0f0f0"
-                CornerRadius="4">
-            <WindowsFormsHost x:Name="windowsFormsHost" UseLayoutRounding="True">
-                <cog:CogRecordDisplay x:Name="cogRecordDisplay" />
-            </WindowsFormsHost>
-        </Border>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <ui:TextBlock Margin="0,0,0,10"
+                          VerticalAlignment="Center"
+                          FontSize="26"
+                          FontWeight="Bold"
+                          Text="{Binding VppFileName}"
+                          TextWrapping="Wrap" />
+            <Border Grid.Row="1"
+                    Padding="16,16,2,2"
+                    Background="#f0f0f0"
+                    CornerRadius="4">
+                <WindowsFormsHost x:Name="windowsFormsHost" UseLayoutRounding="True">
+                    <cog:CogRecordDisplay x:Name="cogRecordDisplay" />
+                </WindowsFormsHost>
+            </Border>
+        </Grid>
 
 
         <ScrollViewer Grid.Column="1" Margin="8,0,0,0" Padding="0,0,12,0">
             <StackPanel>
+                <!--<ui:TextBlock Margin="0,0,0,4"
+                              Style="{StaticResource SubtitleTextBlockStyle}"
+                              VerticalAlignment="Center" Text="{Binding VppFilePath}" />-->
+                <!--<ui:TextBlock Margin="0,0,0,4"
+                              VerticalAlignment="Center"
+                              FontSize="22"
+                              FontWeight="Bold"
+                              Text="{Binding VppFileName}"
+                              TextWrapping="Wrap" />-->
+
                 <ui:TextBlock Margin="0,0,0,4"
                               VerticalAlignment="Center"
                               Style="{StaticResource SubtitleTextBlockStyle}"
@@ -74,7 +96,6 @@
                               VerticalAlignment="Center"
                               Style="{StaticResource SubtitleTextBlockStyle}"
                               Text="输入参数" />
-                <!-- TODO int模板的输入框没有初始值 -->
                 <Border Margin="0,0,0,6"
                         Padding="4"
                         BorderBrush="#f0f0f0"

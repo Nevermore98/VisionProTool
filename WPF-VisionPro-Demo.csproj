@@ -17,6 +17,8 @@
   <ItemGroup>
     <None Remove="Resources\ApplicationIcon.png" />
     <None Remove="Resources\DingTalk-JinBuTi.ttf" />
+    <None Remove="Resources\LoadingCircle.gif" />
+    <None Remove="Resources\LoadingCircle2.gif" />
     <None Remove="Resources\MainWindowIcon.ico" />
   </ItemGroup>
 
@@ -28,6 +30,7 @@
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageReference Include="ValueConverters" Version="3.1.22" />
     <PackageReference Include="WPF-UI" Version="3.0.5" />
+    <PackageReference Include="XamlAnimatedGif" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -73,6 +76,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\DingTalk-JinBuTi.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\LoadingCircle.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\MainWindowIcon.ico">

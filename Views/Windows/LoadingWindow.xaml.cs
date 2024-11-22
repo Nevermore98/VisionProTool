@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
+using WPF_VisionPro_Demo.ViewModels.Windows;
 
 namespace WPF_VisionPro_Demo.Views.Windows
 {
@@ -7,9 +9,17 @@ namespace WPF_VisionPro_Demo.Views.Windows
     /// </summary>
     public partial class LoadingWindow : Window
     {
+        public LoadingWindowVM ViewModel { get; }
         public LoadingWindow()
         {
+            Loaded += LoadingWindow_Loaded;
+            ViewModel = App.Current.Services.GetRequiredService<LoadingWindowVM>();
+            DataContext = ViewModel;
             InitializeComponent();
+        }
+
+        private void LoadingWindow_Loaded(object sender, RoutedEventArgs e)
+        {
         }
     }
 }

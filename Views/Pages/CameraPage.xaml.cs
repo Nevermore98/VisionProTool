@@ -1,6 +1,4 @@
-﻿using Cognex.VisionPro;
-using Cognex.VisionPro.ToolBlock;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Controls;
 using WPF_VisionPro_Demo.ViewModels.Pages;
 using WPF_VisionPro_Demo.Views.Windows;

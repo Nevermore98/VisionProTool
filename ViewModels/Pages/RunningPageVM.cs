@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Messaging.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using Ookii.Dialogs.Wpf;
 using Serilog;
+using Serilog.Core;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -26,7 +27,9 @@ public partial class RunningPageVM : ObservableRecipient, IRecipient<PropertyCha
         if (message.Sender is DebugPageVM debugPage)
         {
             VppFilePath = debugPage.VppFilePath;
+            VppFileName = Path.GetFileNameWithoutExtension(VppFilePath);
             ToolBlock = (CogToolBlock)CogSerializer.LoadObjectFromFile(VppFilePath);
+            if (RecordDisplayControl != null) RecordDisplayControl.Record = null;
         }
     }
 
@@ -35,11 +38,14 @@ public partial class RunningPageVM : ObservableRecipient, IRecipient<PropertyCha
     public CogRecordDisplay RecordDisplayControl { get; set; }
     public CogToolBlock ToolBlock { get; set; } = new();
     public CogImageFileTool ImageFileTool { get; set; } = new();
+
     private ICogImage _currentImage;
     private object _lockObj = new();
 
 
     public string VppFilePath { get; set; } = "";
+    [ObservableProperty]
+    private string _vppFileName = "";
     public string BmpFileDir { get; set; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
 
 
@@ -80,7 +86,7 @@ public partial class RunningPageVM : ObservableRecipient, IRecipient<PropertyCha
     [NotifyCanExecuteChangedFor(nameof(NextImageCommand), nameof(PreviousImageCommand))]
     private List<string> _imagePathList = new(); // 文件夹下的图像路径列表
 
-    
+
 
     #region 统计
     private TimeSpan _keepRunningTimeSpan;
@@ -117,7 +123,6 @@ public partial class RunningPageVM : ObservableRecipient, IRecipient<PropertyCha
         IsActive = true;
 
         _logger = App.Current.Services.GetRequiredService<ILogger>();
-        _logger.Information($"RunningPageVM");
 
         _keepRunningTimer.Interval = TimeSpan.FromSeconds(0.5);
         _keepRunningTimer.Tick += (sender, e) =>
@@ -133,12 +138,15 @@ public partial class RunningPageVM : ObservableRecipient, IRecipient<PropertyCha
 
         void InitControls()
         {
-            RecordDisplayControl.AutoFit = true;
-            RecordDisplayControl.Image = ToolBlock.Inputs["InputImage"]?.Value as ICogImage;
-            InputList = ToolBlock.Inputs
-                .Where(x => x.Name != "InputImage")
-                .Select((x, index) => new InputItem(index + 1, x.ValueType.Name, x.Name, x.Value)).ToList();
-
+            try
+            {
+                RecordDisplayControl.AutoFit = true;
+                RecordDisplayControl.Image = ToolBlock.Inputs["InputImage"]?.Value as ICogImage;
+                InputList = ToolBlock.Inputs
+                    .Where(x => x.Name != "InputImage")
+                    .Select((x, index) => new InputItem(index + 1, x.ValueType.Name, x.Name, x.Value)).ToList();
+            }
+            catch { }
             // TODO 调试用
             //try
             //{
@@ -155,7 +163,6 @@ public partial class RunningPageVM : ObservableRecipient, IRecipient<PropertyCha
             //    RecordDisplayControl.Image = ImageFileTool.OutputImage;
             //    ToolBlock.Inputs["InputImage"].Value = ImageFileTool.OutputImage;
 
-            //    // TODO FindCount 绑定不上
             //    InputList = ToolBlock.Inputs
             //        .Where(x => x.Name != "InputImage")
             //        .Select((x, index) => new InputItem(index + 1, x.ValueType.Name, x.Name, x.Value)).ToList();
@@ -255,12 +262,14 @@ public partial class RunningPageVM : ObservableRecipient, IRecipient<PropertyCha
     {
         try
         {
+            var result = string.Join(", ", InputList.Select(x => $"{x.Name}: {x.Value}"));
+            _logger.Information($"开始运行 ToolBlock，输入参数：【{result}】");
             RunToolBlock();
         }
         catch (Exception ex)
         {
+            _logger.Error("运行 ToolBlock 失败：" + ex.Message);
             MessageBox.Show("运行失败：" + ex.Message);
-            return;
         }
     }
 
@@ -364,8 +373,11 @@ public partial class RunningPageVM : ObservableRecipient, IRecipient<PropertyCha
             .ToList();
         });
 
+        var result = string.Join(", ", OutputList.Select(x => $"{x.Name}: {x.Value}"));
+        _logger.Information($"运行 ToolBlock 完成，耗时：{CurrentHandleTime} ms，输出参数：【{result}】");
+
         _currentRunStopwatch.Reset();
-        if(IsSaveBmp)
+        if (IsSaveBmp)
         {
             SaveBmp();
         }
@@ -437,7 +449,7 @@ public partial class RunningPageVM : ObservableRecipient, IRecipient<PropertyCha
     }
 
     [RelayCommand]
-    public void ClearStatistics() 
+    public void ClearStatistics()
     {
         RunCount = 0;
         SaveBmpCount = 0;

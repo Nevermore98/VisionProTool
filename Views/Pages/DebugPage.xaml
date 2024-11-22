@@ -11,8 +11,7 @@
       xmlns:pages="clr-namespace:WPF_VisionPro_Demo.ViewModels.Pages"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
-      d:DataContext="{d:DesignInstance Type=pages:DebugPageVM,
-                                       IsDesignTimeCreatable=True}"
+      d:DataContext="{d:DesignInstance Type=pages:DebugPageVM}"
       d:DesignHeight="450"
       d:DesignWidth="800"
       mc:Ignorable="d">
@@ -37,10 +36,28 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0">
-            <ui:TextBox IsReadOnly="True" Text="{Binding VppFilePath}" />
-            <DockPanel Margin="0,6,0,0" LastChildFill="False">
-                <ui:Button Margin="0,0,0,0"
-                           Appearance="Primary"
+            <!-- 标题与路径 -->
+            <ui:TextBlock Margin="0,0,0,2"
+                          VerticalAlignment="Center"
+                          FontSize="26"
+                          FontWeight="Bold"
+                          Text="{Binding VppFileName}"
+                          TextWrapping="Wrap" />
+
+            <ui:TextBlock Margin="0,0,0,10" FontSize="12" TextWrapping="Wrap">
+                <Run Text="{Binding VppFilePath}" />
+                <InlineUIContainer BaselineAlignment="Center">
+                    <ui:Button Margin="4,0,0,0"
+                               Padding="4"
+                               Command="{Binding CopyVppFilePathCommand}"
+                               Icon="{ui:SymbolIcon Copy16,
+                                                    Filled=False}" />
+                </InlineUIContainer>
+            </ui:TextBlock>
+
+            <!-- 打开、保存、另存为 -->
+            <DockPanel LastChildFill="False">
+                <ui:Button Appearance="Primary"
                            Command="{Binding LoadToolBlockCommand}"
                            Content="打开"
                            Icon="{ui:SymbolIcon Document24,

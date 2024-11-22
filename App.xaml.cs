@@ -7,6 +7,8 @@ using WPF_VisionPro_Demo.ViewModels.Pages;
 using WPF_VisionPro_Demo.ViewModels.Windows;
 using WPF_VisionPro_Demo.Views.Pages;
 using WPF_VisionPro_Demo.Views.Windows;
+using Serilog.Core;
+
 
 #if NET5_0_OR_GREATER
 
@@ -39,6 +41,7 @@ namespace WPF_VisionPro_Demo
         public new static App Current => (App)Application.Current;
         public IServiceProvider Services { get; }
 
+        private ILogger _logger;
 
         private static IServiceProvider ConfigureServices()
         {
@@ -61,6 +64,7 @@ namespace WPF_VisionPro_Demo
 
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IPageService, PageService>();
+            services.AddSingleton<ILoadingService, LoadingService>();
 
 
             // 视图
@@ -75,11 +79,12 @@ namespace WPF_VisionPro_Demo
             services.AddSingleton<CameraPage>();
             services.AddSingleton<CameraPageVM>();
 
-            services.AddSingleton<RunningPage>();
-            services.AddSingleton<RunningPageVM>();
 
             services.AddSingleton<DebugPage>();
             services.AddSingleton<DebugPageVM>();
+
+            services.AddSingleton<RunningPage>();
+            services.AddSingleton<RunningPageVM>();
 
             services.AddSingleton<SettingsPage>();
             services.AddSingleton<SettingsPageVM>();
@@ -89,22 +94,26 @@ namespace WPF_VisionPro_Demo
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            _logger = Services.GetRequiredService<ILogger>();
+            _logger.Information("程序启动");
             RegisterEvents();
 
             // 优化 winform 控件样式
             System.Windows.Forms.Application.EnableVisualStyles();
 
-            var loadingWindow = Services.GetRequiredService<LoadingWindow>();
-            loadingWindow.Show();
+            var loadingService = Services.GetRequiredService<ILoadingService>();
+            loadingService.Show("加载中", "初始化所有模块...");
 
             // 先预创建视图，后面切换导航就不用等待
-            Services.GetRequiredService<DebugPage>();
+            // 先初始化 RunningPage，注册 receive 事件，才能接收到 debugPage 的 vppFilePath 改变通知
             Services.GetRequiredService<RunningPage>();
+            Services.GetRequiredService<DebugPage>();
             Services.GetRequiredService<CameraPage>();
 
             var mainWindow = Services.GetRequiredService<MainWindow>();
-            loadingWindow.Close();
+            loadingService.Close();
             mainWindow.Show();
+
         }
 
         #region 全局异常捕获

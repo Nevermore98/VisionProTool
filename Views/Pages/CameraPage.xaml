@@ -26,12 +26,11 @@
 
     <Grid Margin="10">
         <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Text="相机采集 TODO" />
-
 
         <Border Grid.Row="1"
                 Padding="10"

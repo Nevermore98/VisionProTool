@@ -7,30 +7,60 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:pages="clr-namespace:WPF_VisionPro_Demo.Views.Pages"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:vconv="http://schemas.superdev.ch/valueconverters/2016/xaml"
         xmlns:vm="clr-namespace:WPF_VisionPro_Demo.ViewModels.Windows"
         Title="LoadingWindow"
         Width="400"
         Height="250"
         d:DataContext="{d:DesignInstance vm:LoadingWindowVM}"
-        AllowDrop="True"
         AllowsTransparency="True"
         Background="Transparent"
         FontFamily="{StaticResource Dingding}"
         Icon="/Resources/MainWindowIcon.ico"
         ResizeMode="NoResize"
-        WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         mc:Ignorable="d">
+    <Window.Resources>
+        <ResourceDictionary>
+            <vconv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" FalseValue="Collapsed" />
+        </ResourceDictionary>
+    </Window.Resources>
     <Border Background="{StaticResource SystemAccentColorPrimaryBrush}" CornerRadius="15">
-        <Grid>
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <ui:TextBlock FontSize="20" Foreground="White" Text="加载中" />
+        <Grid Margin="0,0,0,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0"
+                        Margin="0,0,0,-10"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <ui:TextBlock d:Text="加载中"
+                              FontSize="24"
+                              Foreground="White"
+                              Text="{Binding Title}" />
                 <ui:ProgressRing Width="20"
                                  Height="20"
                                  Margin="0,10,0,0"
                                  Foreground="White"
-                                 IsIndeterminate="True" />
+                                 IsIndeterminate="True"
+                                 Visibility="{Binding IsShowSpinner, Converter={StaticResource BoolToVisibilityConverter}}" />
+                <!-- 使用 XamlAnimatedGif GIF 一样会被主线程卡住 -->
+                <!--<Image Width="30"
+                       Height="30"
+                       HorizontalAlignment="Center"
+                       gif:AnimationBehavior.SourceUri="/Resources/LoadingCircle.gif" />-->
             </StackPanel>
+
+            <ui:TextBlock Grid.Row="1"
+                          Padding="20,0"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Bottom"
+                          d:Text="初始化中..."
+                          FontSize="16"
+                          Foreground="White"
+                          Text="{Binding Message}" />
         </Grid>
     </Border>
 
