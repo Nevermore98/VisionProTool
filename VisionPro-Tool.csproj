@@ -123,6 +123,48 @@
     <None Update="VppData\多目标识别\vpp\多目标斑点卡尺.vpp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="VppData\溢胶评估\img\Image_20240116103457193.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\溢胶评估\img\Image_20240116103510068.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\溢胶评估\img\Image_20240116103522070.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\溢胶评估\img\Image_20240116103531147.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\溢胶评估\img\Image_20240116103547759.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\溢胶评估\img\Image_20240116103559254.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\溢胶评估\img\Image_20240116103610994.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\溢胶评估\img\Image_20240116103620044.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\溢胶评估\vpp\溢胶评估.vpp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\胶路检测\img\11.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\胶路检测\img\12.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\胶路检测\img\13.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\胶路检测\img\14.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="VppData\胶路检测\vpp\胶路检测.vpp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="VppData\零件瑕疵检测TB.vpp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

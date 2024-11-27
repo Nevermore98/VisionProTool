@@ -8,7 +8,6 @@ using CommunityToolkit.Mvvm.Messaging.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using Ookii.Dialogs.Wpf;
 using Serilog;
-using Serilog.Core;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -26,6 +25,14 @@ public partial class RunningPageVM : ObservableRecipient, IRecipient<PropertyCha
     {
         if (message.Sender is DebugPageVM debugPage)
         {
+            ImagePathList = new();
+            OutputList = new();
+            RunCount = 0;
+            SaveBmpCount = 0;
+            KeepRunningTime = "00:00";
+            CurrentHandleTime = 0;
+            AverageHandleTime = 0;
+
             VppFilePath = debugPage.VppFilePath;
             VppFileName = Path.GetFileNameWithoutExtension(VppFilePath);
             if (File.Exists(VppFilePath)) ToolBlock = (CogToolBlock)CogSerializer.LoadObjectFromFile(VppFilePath);

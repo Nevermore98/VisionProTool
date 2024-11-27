@@ -23,16 +23,15 @@ public partial class DebugPageVM : ObservableRecipient
 
 
     [ObservableProperty]
-    private string _name = "脚本";
-    [ObservableProperty]
-    private bool _isSizeChanging = false;
-
-    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(VppFileName))]
     [NotifyPropertyChangedRecipients]
     private string _vppFilePath = "";
 
     public string VppFileName => Path.GetFileNameWithoutExtension(VppFilePath);
+
+    // TODO 运行页保持与调试页选择显示的图像
+    [ObservableProperty]
+    private int _selectedDisplayImage = 0;
 
     public DebugPageVM()
     {
